@@ -1,0 +1,37 @@
+﻿
+#include <windows.h>
+
+// 图标
+IDI_ICON1 ICON "icon.ico"
+
+// 版本信息资源
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     0,1,4,1
+PRODUCTVERSION  0,1,4,1
+FILEFLAGSMASK   0x3fL
+FILEFLAGS       0x0L
+FILEOS          0x00040004L
+FILETYPE        0x00000001L
+FILESUBTYPE     0x00000000L
+
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0" 
+        BEGIN
+            VALUE "CompanyName", "801 Dev Team\0"
+            VALUE "FileDescription", "Class vs. Student\0"
+            VALUE "FileVersion", "0.1.4.1\0"
+            VALUE "InternalName", "Class vs. Students\0"
+            VALUE "LegalCopyright", "None\0"
+            VALUE "OriginalFilename", "main.exe\0"
+            VALUE "ProductName", "Class vs Students\0"
+            VALUE "ProductVersion", "0.1.4.1\0"
+        END
+    END
+    
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 0x04B0
+    END
+END
