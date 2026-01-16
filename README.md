@@ -36,13 +36,21 @@ A turn-based tactical battle game where students fight based on their academic s
 ## 🛠️ Development
 ### Project Structure
 Class-vs-Students/
+
 ├── main.cpp # Main game loop & control logic
+
 ├── student.h # Header aggregating all character classes
+
 ├── teacher.h # Weekly class schedule data
+
 ├── students/ # Individual character headers (A0.h, A1.h, ...)
+
 ├── compile.bat # Windows one-click build script
+
 ├── headers.h # Standard library includes
+
 ├── app.rc & icon.ico # Application resources & icon
+
 └── README.md # This file
 ### Core Developers
 This project was collaboratively created by:
@@ -51,4 +59,4 @@ This project was collaboratively created by:
 *   [cso666](https://www.luogu.com.cn/user/1300229) (Repository Maintainer)
 
 ## 📄 License
-Distributed under the **MIT License**. See the `LICENSE` file for details.
+No licence.Just for fun!
