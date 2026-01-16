@@ -1,4 +1,4 @@
-﻿//This file includes all the header files we need.
+//This file includes all the header files we need.
 #include<iostream>
 #include<cstdio>
 #include<cstdlib>
