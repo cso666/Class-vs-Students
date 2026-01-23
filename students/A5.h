@@ -21,6 +21,7 @@ class stud_A5:public stud{
 					(*target).can_act=false;
 					(*target).cant_act+=2;
 				}
+				return 2;
 		}
 		void after_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::after_att(target,teach,team,beside_team);			

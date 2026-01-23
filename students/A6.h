@@ -28,7 +28,7 @@ public:
         // 修复：检查目标是否有"牢门"属性(15)
         for(auto prop : target->py) {  // 遍历目标的属性列表
             if(prop == 15) {  // 如果目标是"牢门"属性
-                be_att_mul = 0.5;  // 对该目标的伤害减半
+                be_att_mul *= 0.5;  // 对该目标的伤害减半
                 break;
             }
         }
@@ -38,6 +38,6 @@ public:
     
     void on_minus_red(stud* target, int teach, vector<stud*> team, vector<stud*> beside_team) override {
         stud::on_minus_red(target, teach, team, beside_team);    
-        be_att_mul = 1.0;  // 恢复默认伤害倍率    
+        be_att_mul /= 0.5;  // 恢复默认伤害倍率    
     }
 };

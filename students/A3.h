@@ -2,13 +2,12 @@
 #include<cstdlib>
 class stud_A3:public stud{
 	public:
-		vector<int>hurtme; 
+		vector<pair<stud*,int> >hurtme; 
 		stud_A3(){
 			red_up+=5,blue_up+=0,white_up+=0;
 			red=red_up,blue=blue_up,white=white_up;
 			att-=8;
 			hurtme.clear();
-			hurtme.push_back(0);
 			py.push_back(2);
 			py.push_back(10);
 			py.push_back(15);
@@ -22,7 +21,8 @@ class stud_A3:public stud{
 	int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 		stud::before_att(target,teach,team,beside_team);
 		
-		(*target).be_att_mul*=1.28;
+		(*target).be_att_mul*=1.25;
+		hurtme.push_back({target,2});
 		if(rand()%2==1)blue-=3;
 	}
 	void after_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
@@ -30,10 +30,23 @@ class stud_A3:public stud{
 	}
 	int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 		stud::on_before_be_atted(target,teach,team,beside_team);	
-	    (*target).be_att_mul*=1.28;
+	    (*target).be_att_mul*=1.25;
+	    hurtme.push_back({target,2});
 	    if(rand()%2==1)blue-=3;
 	}
 	void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 		    stud::on_minus_red(target,teach,team,beside_team);		
+	}
+	void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			stud::on_turn_start(target,teach,team,beside_team);
+		
+		for(int i=0;i<hurtme.size();i++){
+			hurtme[i].second-=1;
+			if(hurtme[i].second<0){
+				(*hurtme[i].first).be_att_mul/=1.25;
+				hurtme.erase(hurtme.begin()+i);
+				i--;
+			}
+		}
 	}
 };

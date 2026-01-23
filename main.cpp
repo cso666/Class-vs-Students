@@ -79,6 +79,7 @@ void hitt(void* f1,void* f2,vector<void*> T1,vector<void*> T2){
 	if(sit1==1||sit2==1)return;
 	
 	int final_att=((*ta).att*(*ta).att_mul*(*tb).be_att_mul+(*ta).tmp_att_plus);
+	if(sit1!=2&&sit2!=2)final_att=min(final_att,30);
 	(*tb).red-=final_att;
 	(*ta).white-=5*((*ta).white_mul);
 	(*ta).after_att(tb,sbj_teacher,t1,t2);
@@ -250,6 +251,13 @@ void turn(int timE,vector<void*> lA,vector<void*>lB){//战斗回合
 			}
 		}
 		if(Anum<=0||Bnum<=0) break;
+		
+		for(auto player : lA) {
+	    	((stud*)player)->on_turn_end(nullptr, sbj_teacher, teamA_stud, teamB_stud);
+		}
+		for(auto player : lB) {
+  	 		((stud*)player)->on_turn_end(nullptr, sbj_teacher, teamB_stud, teamA_stud);
+		}
 	}
 	sett(lA,lB);
 }

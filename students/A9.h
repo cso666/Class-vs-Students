@@ -32,13 +32,13 @@ class stud_A9:public stud{
 		void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_start(target,teach,team,beside_team);
 			for(auto x:team){
-				(*x).att_mul*=1.5;
+				(*x).att_mul*=1.35;
 			}
 		}
 		void on_turn_end(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_end(target,teach,team,beside_team);
 			for(auto x:team){
-				(*x).att_mul/=1.5;
+				(*x).att_mul/=1.35;
 			}
 		}
 };
