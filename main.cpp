@@ -263,6 +263,7 @@ void turn(int timE,vector<void*> lA,vector<void*>lB){//战斗回合
 }
 
 void fight(int day,int cla){
+	system("cls");
 	if(day==5&&cla>=7) return;
 	if(cla==8){
 		cout << "\n this time is late-self-learning,we all need fight!\n";
