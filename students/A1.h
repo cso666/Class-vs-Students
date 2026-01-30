@@ -18,19 +18,21 @@ class stud_A1:public stud{
 			name="A01";
 		}
 	int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-		stud::before_att(target,teach,team,beside_team);//一个好习惯，勿删！
+		int return_num=stud::before_att(target,teach,team,beside_team);//一个好习惯，勿删！
 				white_mul=1.25;
 				if((rand()*rand())%20==16){
 				    tmp_att_plus+=5;
 					(*target).can_act=false;
 					(*target).cant_act++;
 				}
+		return return_num;
 	}
 	void after_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 		stud::after_att(target,teach,team,beside_team);			
 	}
 	int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			stud::on_before_be_atted(target,teach,team,beside_team);		
+			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);		
+			return return_num;
 	}
 	void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 		    	stud::on_minus_red(target,teach,team,beside_team);	

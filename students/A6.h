@@ -14,8 +14,8 @@ public:
     }
     
     int before_att(stud* target, int teach, vector<stud*> team, vector<stud*> beside_team) override {
-        stud::before_att(target, teach, team, beside_team);
-        return 0;  // 必须返回int
+        int return_num=stud::before_att(target, teach, team, beside_team);
+        return return_num;
     }
     
     void after_att(stud* target, int teach, vector<stud*> team, vector<stud*> beside_team) override {
@@ -23,7 +23,7 @@ public:
     }
     
     int on_before_be_atted(stud* target, int teach, vector<stud*> team, vector<stud*> beside_team) override {
-        stud::on_before_be_atted(target, teach, team, beside_team);
+        int return_num=stud::on_before_be_atted(target, teach, team, beside_team);
         
         // 修复：检查目标是否有"牢门"属性(15)
         for(auto prop : target->py) {  // 遍历目标的属性列表
@@ -33,7 +33,7 @@ public:
             }
         }
         
-        return 0;  // 必须返回int
+        return return_num;  // 必须返回int
     }
     
     void on_minus_red(stud* target, int teach, vector<stud*> team, vector<stud*> beside_team) override {

@@ -30,37 +30,30 @@ public:
         name = "A04";
     }
     
-    // 修复1: 返回int（匹配基类）
     int before_att(stud* target, int teach, vector<stud*> team, vector<stud*> beside_team) override {
-        stud::before_att(target, teach, team, beside_team);
+        int return_num=stud::before_att(target, teach, team, beside_team);
         
-        // 修复2: 正确的循环语法
-        for(size_t i = 0; i < beside_team.size(); i++) {
+        for(size_t i = 0; i < beside_team.size(); i++ ){
             beside_team[i]->blue -= 3;
         }
         
-        return 0;  // 必须返回int
+        return return_num;
     }
     
     void after_att(stud* target, int teach, vector<stud*> team, vector<stud*> beside_team) override {
         stud::after_att(target, teach, team, beside_team);        
     }
     
-    // 修复3: 返回int（匹配基类）
     int on_before_be_atted(stud* target, int teach, vector<stud*> team, vector<stud*> beside_team) override {
-        stud::on_before_be_atted(target, teach, team, beside_team);
+        int return_num=stud::on_before_be_atted(target, teach, team, beside_team);
         
-        // 修复4: 正确的循环语法
         for(size_t i = 0; i < beside_team.size(); i++) {
             beside_team[i]->blue -= 3;
         }
-        
-        // 修复5: 确保所有路径都有返回值
         if(rand() % 3 == 1) {
             return 1;        
         }
-        
-        return 0;  // 必须确保所有路径都返回int
+        return return_num;
     }
     
     void on_minus_red(stud* target, int teach, vector<stud*> team, vector<stud*> beside_team) override {

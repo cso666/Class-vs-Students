@@ -1,4 +1,4 @@
-﻿#include"headers.h"
+#include"headers.h"
 #include"student.h"
 //注意！需要图标的话用project文件夹下的compile.bat编译，调试时可以使用Devc++. 
 #include"teacher.h"
@@ -200,7 +200,7 @@ void turn(int timE,vector<void*> lA,vector<void*>lB){//战斗回合
 	    ((stud*)player)->on_turn_start(nullptr, sbj_teacher, teamA_stud, teamB_stud);
 	}
 	for(auto player : lB) {
-  	  ((stud*)player)->on_turn_start(nullptr, sbj_teacher, teamB_stud, teamA_stud);
+  	    ((stud*)player)->on_turn_start(nullptr, sbj_teacher, teamB_stud, teamA_stud);
 	}
 		void* ta;void* tb;void* tc;void *td;
 		system("cls");

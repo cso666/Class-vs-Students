@@ -1,5 +1,4 @@
-﻿
-#include <windows.h>
+﻿#include <windows.h>
 
 // 图标
 IDI_ICON1 ICON "icon.ico"
@@ -21,12 +20,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "801 Dev Team\0"
             VALUE "FileDescription", "Class vs. Students\0"
-            VALUE "FileVersion", "0.2.5.0\0"
+            VALUE "FileVersion", "0.2.5.1\0"
             VALUE "InternalName", "Class vs. Students\0"
             VALUE "LegalCopyright", "None\0"
             VALUE "OriginalFilename", "main.exe\0"
             VALUE "ProductName", "Class vs. Students\0"
-            VALUE "ProductVersion", "0.2.5.0\0"
+            VALUE "ProductVersion", "0.2.5.1\0"
         END
     END
     

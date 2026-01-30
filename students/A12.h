@@ -15,20 +15,22 @@ class stud_A12: public stud{
 			name="A12";
 		}
 		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			stud::before_att(target,teach,team,beside_team);
+		    int return_num=stud::before_att(target,teach,team,beside_team);
 			if((*target).id==8){
 				int final_att=(att*att_mul*(*target).be_att_mul+tmp_att_plus);
 				for(auto x:beside_team){
 					(*x).red-=final_att*0.10;
 				}
 			}	
+			return return_num;
 		}
 		void after_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 				stud::after_att(target,teach,team,beside_team);		
 		}
 		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			stud::on_before_be_atted(target,teach,team,beside_team);	
-			be_att_mul*=max((150.0-blue)/150.0,1.0);		
+			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
+			be_att_mul*=max((150.0-blue)/150.0,1.0);
+			return return_num;		
 		}
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_minus_red(target,teach,team,beside_team);	
