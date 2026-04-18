@@ -2,7 +2,9 @@
 
 class stud_A5:public stud{
 	public:
+		bool is_plusatt=0;
 		stud_A5(){
+			is_plusatt=0;
 			red_up+=80,blue_up+=20,white_up+=0;
 			red=red_up,blue=blue_up,white=white_up;
 			att+=5;
@@ -20,11 +22,16 @@ class stud_A5:public stud{
 				    tmp_att_plus+=5;
 					(*target).can_act=false;
 					(*target).cant_act+=2;
+					is_plusatt=1;
 				}
 				return 2;
 		}
 		void after_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			stud::after_att(target,teach,team,beside_team);			
+			stud::after_att(target,teach,team,beside_team);	
+				if(is_plusatt==1){
+				is_plusatt=0;
+				tmp_att_plus-=5;
+			}			
 		}
 		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);	

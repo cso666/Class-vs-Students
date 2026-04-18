@@ -17,10 +17,12 @@ class stud_B11:public stud{
 		}
 		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::before_att(target,teach,team,beside_team);
+			if((*target).red<=25)return 1;
 			return return_num;
 		}
 		void after_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			stud::after_att(target,teach,team,beside_team);			
+			stud::after_att(target,teach,team,beside_team);	
+			if((*target).red<=25)tmp_att_plus+=4;		
 		}
 		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
@@ -28,5 +30,9 @@ class stud_B11:public stud{
 		}
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			    stud::on_minus_red(target,teach,team,beside_team);		
+		}
+		virtual void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			stud::on_turn_start(target,teach,team,beside_team);
+			for(auto y:team)(*y).cblue(10);
 		}
 };

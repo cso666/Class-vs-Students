@@ -33,7 +33,8 @@ class stud_A7:public stud{
 			 if(red<=0&&white>1&&have_dead==0){
 			 	have_dead=1;
 			 	red=0.5*red_up;
+			 	status=1;
 			 }  
-			(*target).red-=0.3*final_att; 	
+			(*target).cred(-int(0.3*final_att)); 	
 		}
 };

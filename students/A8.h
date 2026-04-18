@@ -32,7 +32,7 @@ class stud_A8:public stud{
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_minus_red(target,teach,team,beside_team);	
 			  int final_att=((*target).att*(*target).att_mul*be_att_mul+(*target).tmp_att_plus);
-			  red+=(final_att-8);  	
+			  cred(final_att-8);  	
 		}
 		void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_start(target,teach,team,beside_team);

@@ -1,7 +1,8 @@
-#include "A0.h"
+#include"A0.h"
 
 class stud_A12: public stud{
 	public:
+		double base_be_att_mul = 1.0;
 		stud_A12(){
 			red_up+=10;blue_up+=10;white_up-=20;
 			red=red_up;blue=blue_up;white=white_up;
@@ -13,13 +14,14 @@ class stud_A12: public stud{
 			ct2.pb("EnchantedGoldenApple");//附魔金苹果
 			id=12;
 			name="A12";
+			base_be_att_mul = be_att_mul;
 		}
 		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 		    int return_num=stud::before_att(target,teach,team,beside_team);
 			if((*target).id==8){
 				int final_att=(att*att_mul*(*target).be_att_mul+tmp_att_plus);
 				for(auto x:beside_team){
-					(*x).red-=final_att*0.10;
+					(*x).cred(-final_att*0.10);
 				}
 			}	
 			return return_num;
@@ -29,11 +31,15 @@ class stud_A12: public stud{
 		}
 		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
-			be_att_mul*=max((150.0-blue)/150.0,1.0);
+			be_att_mul *= max((150.0-blue)/150.0,1.0);
 			return return_num;		
 		}
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_minus_red(target,teach,team,beside_team);	
-			be_att_mul*=max((150.0-blue)/150.0,1.0);
+			be_att_mul *= max((150.0-blue)/150.0,1.0);
+		}
+		void on_turn_end(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			stud::on_turn_end(target,teach,team,beside_team);
+			be_att_mul = base_be_att_mul;
 		}
 };

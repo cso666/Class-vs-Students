@@ -3,6 +3,7 @@
 class stud_B7:public stud{
 	public:
 		stud_B7(){
+			white_mul*=1.3;
 			red_up+=4,blue_up-=14,white_up+=6;
 			red=red_up,blue=blue_up,white=white_up;
 			att+=1;
@@ -16,10 +17,12 @@ class stud_B7:public stud{
 		}
 		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::before_att(target,teach,team,beside_team);
+			att_mul*=1.3;
 			return return_num;
 		}
 		void after_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::after_att(target,teach,team,beside_team);			
+			att_mul/=1.3;
 		}
 		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
@@ -27,5 +30,13 @@ class stud_B7:public stud{
 		}
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			    stud::on_minus_red(target,teach,team,beside_team);		
+		}
+		void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			stud::on_turn_start(target,teach,team,beside_team);
+			blue_mul=red_mul=1.0;
+			white_mul=1.3;
+			att_mul=be_att_mul=1.0;
+			tmp_att_plus=0;
+			can_act=true;
 		}
 };

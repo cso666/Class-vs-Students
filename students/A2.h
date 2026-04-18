@@ -1,5 +1,5 @@
 #include"A0.h"
-#include<cstdlib>
+
 class stud_A2:public stud{
 	public:
 		stud_A2(){
@@ -24,7 +24,7 @@ class stud_A2:public stud{
 				}
 				if((*target).name=="B10"){
 					tmp_att_plus+=5;
-					blue-=24;
+					cblue(-24);
 				}
 				if((rand()*rand())%3==1){
 					tmp_att_plus+=5;

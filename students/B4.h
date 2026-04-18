@@ -3,11 +3,13 @@
 class stud_B4:public stud{
 	public:
 		stud_B4(){
+			weidadebp=0;
 			red_up-=26,blue_up+=0,white_up+=64;
 			red=red_up,blue=blue_up,white=white_up;
+			be_att_mul=0.25;
 			att+=0;
 			ct1.pb("GeniusBEET");//甜菜
-			ct1.pb("BP");//扒皮
+			ct2.pb("BP");//扒皮
 			ct1.pb("ForeignFriend");//国际友人
 			ct1.pb("LaoKing");//牢王
 			id=17;
@@ -26,5 +28,20 @@ class stud_B4:public stud{
 		}
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			    stud::on_minus_red(target,teach,team,beside_team);		
+		}
+		void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			stud::on_turn_start(target,teach,team,beside_team);
+			if((teach==3||teach==4)&&!weidadebp){
+				weidadebp=1;
+				for(auto x:team){
+					x->be_att_mul-=0.15;
+				}
+			}
+			if((teach!=3&&teach!=4)&&weidadebp){
+				weidadebp=0;
+				for(auto x:team){
+					x->be_att_mul+=0.15;
+				}
+			}
 		}
 };

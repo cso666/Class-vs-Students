@@ -22,7 +22,7 @@ class stud_A9:public stud{
 			return return_num;
 		}
 		void after_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-					stud::after_att(target,teach,team,beside_team);	
+			stud::after_att(target,teach,team,beside_team);	
 		}
 		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);	

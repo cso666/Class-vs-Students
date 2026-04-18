@@ -1,10 +1,11 @@
-﻿#include "A0.h"
+#include"A0.h"
 
 class stud_A10:public stud{
 	public:
 		int sugar=0;
 		stud_A10(){
 			sugar=0;
+			blue_mul*=1.2;
 			red_up-=20,blue_up-=40,white_up+=0;
 			red=red_up,blue=blue_up,white=white_up;
 			att+=5;
@@ -30,9 +31,9 @@ class stud_A10:public stud{
 		}
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_minus_red(target,teach,team,beside_team);	
-			   if(red<=0||white<=0){
+			   if(status==0||status==-1){
 			   	for(auto x:beside_team)
-			   		(*x).red-=sugar;
+			   		(*x).cred(-1*sugar);
 			   }
 		}
 };
