@@ -39,4 +39,8 @@ class stud_B7:public stud{
 			tmp_att_plus=0;
 			can_act=true;
 		}
+		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		stud::skhit(target,teach,team,beside_team);
+		
+	}
 };

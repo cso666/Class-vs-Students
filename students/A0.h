@@ -4,6 +4,7 @@
 #define pb push_back
 #ifndef __stud__
 #define __stud__
+
 string ppty_name[100]={"占位",
 				  	   "语表"/*1*/,"数表"/*2*/,"英表A"/*3*/,"英表B"/*4*/,
 						"史表"/*5*/,"政表"/*6*/,"体委"/*7*/,"物表"/*8*/,"信表"/*9*/,"美表"/*10*/,
@@ -13,6 +14,7 @@ string ppty_name[100]={"占位",
 class stud{
 	private:
 	public:
+		int tim;
 		//(B6)
 		double B6CADB;
 		//伟大的扒皮！(B4)
@@ -22,11 +24,19 @@ class stud{
 		//(B3)
 		bool teacher_is_HT;
 		bool has_A10;
-
+		//(A10)
+		int sugar;
+		//(A1)
+		void* sour_lemon;
+		//(A6)
+		void* James;
+		//(A7)
+		bool Bighuocar;
 		int red,red_up;//红条血量，上限 
 		int blue,blue_up;//蓝条理智，上限 
 		int white,white_up;//白条体力，上限 
 		double white_mul=1.0,blue_mul=1.0,red_mul=1.0;
+		double white_mul_p=1.0,blue_mul_p=1.0,red_mul_p=1.0;
 		int att;double att_mul,be_att_mul;//伤害和伤害乘区 
 		vector<int> py;//属性
 		vector<string>ct1,ct2;//词条 1:被动 2:主动 
@@ -39,28 +49,27 @@ class stud{
 		bool is_crazy=false;//疯人状态标记
 		int status=1;
 		
-		int cred(int chg){
-			red+=chg*red_mul;
+		virtual int cred(int chg){
+			if(chg<0)red+=chg*red_mul;
+			else red+=chg*red_mul_p;
 			red=min(red,red_up);
 			if(red<0)red=0,status=0;
 			return status;
 		}
-		int cwhite(int chg){
-			if(id==19){
-				chg*=1.2;
-			}
-			white+=chg*white_mul;
+		virtual int cwhite(int chg){
+			if(chg<0)white+=chg*white_mul;
+			else white+=chg*white_mul_p;
 			white=min(white,white_up);
 			if(white<0)status=-1;
 			else if(white>=0&&status==-1){status=1;}
 			return status;
 		}
-		int cblue(int chg){
+		virtual int cblue(int chg){
 			if(id==14){
-				chg*=1.35;
 				cred(8);
 			}
-			blue+=chg*blue_mul;
+			if(chg<0)blue+=chg*blue_mul;
+			else blue+=chg*blue_mul_p;
 			blue=min(blue,blue_up);
 			if(blue<0) is_crazy = true;
 			return status;
@@ -90,11 +99,12 @@ class stud{
 			
 			for(auto x:beside_team)
 				if((*x).id==9&&final_att>=18){
-					cblue(-2);
-					cwhite(-2);
+					cblue(-20);
+					cwhite(-10);
 				}
 		}
 		virtual void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			tim++;
 			tmp_att_plus=0;
 			if(cant_act>=0){
 				cant_act--;
@@ -121,7 +131,23 @@ class stud{
 			int fwry=0;
 			fwry=1;
 		}//每个回合结束后（不知道有什么用但留着请别删
+
+		// 每天开始时调用（在 fight 函数之前）
+		virtual void on_day_start(int subject_id){;}
+		// 每节课结束时调用（fight 函数结束后）
+		virtual void on_fight_end(){;}
+		// 敌方死亡时触发
+		virtual void on_enemy_death(vector<stud*>&team){;}
+		// 检查是否退场（用于战斗选择时排除）
+		virtual bool isAway()const{return false;}
+		// 重置每天状态
+		virtual void resetDaily(){}
+		//主动技能
+		virtual void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			;
+		}
 		stud(){
+			tim=0;
 			red=red_up=blue=blue_up=white=white_up=100;
 			white_mul=1.0;
 			blue_mul=1.0;

@@ -57,4 +57,15 @@ class stud_A4:public stud{
     void on_minus_red(stud* target, int teach, vector<stud*> team, vector<stud*> beside_team) override {
         stud::on_minus_red(target, teach, team, beside_team);    
     }
+    void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		stud::skhit(target,teach,team,beside_team);
+		cwhite(-20);
+        int final_att=(7*att_mul+tmp_att_plus)*(target -> be_att_mul);
+		if(final_att<=12){
+			target->cred(final_att);
+		}
+		else if(final_att>12){
+			target->cred(-12);
+		}
+	}
 };

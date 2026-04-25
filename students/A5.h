@@ -5,7 +5,7 @@ class stud_A5:public stud{
 		bool is_plusatt=0;
 		stud_A5(){
 			is_plusatt=0;
-			red_up+=80,blue_up+=20,white_up+=0;
+			red_up+=30,blue_up+=20,white_up+=0;
 			red=red_up,blue=blue_up,white=white_up;
 			att+=5;
 			py.push_back(13);
@@ -21,7 +21,8 @@ class stud_A5:public stud{
 				if((rand()*rand())%10==9){
 				    tmp_att_plus+=5;
 					(*target).can_act=false;
-					(*target).cant_act+=2;
+					int ctttt=tim%26%3; 
+					(*target).cant_act+=3-ctttt;
 					is_plusatt=1;
 				}
 				return 2;
@@ -40,4 +41,10 @@ class stud_A5:public stud{
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			    stud::on_minus_red(target,teach,team,beside_team);		
 		}
+		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		stud::skhit(target,teach,team,beside_team);
+		cwhite(-15);
+		cblue(5);
+		target -> cred(-25);
+	}
 };

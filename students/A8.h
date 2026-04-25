@@ -5,7 +5,7 @@ class stud_A8:public stud{
 		stud_A8(){
 			red_up+=0,blue_up+=0,white_up+=0;
 			red=red_up,blue=blue_up,white=white_up;
-			att-=4;
+			att-=2;
 			py.push_back(15);
 			ct1.push_back("TurtleLivesLong");//神龟虽寿
 			ct1.push_back("BrainStorm");//头脑风暴
@@ -20,6 +20,7 @@ class stud_A8:public stud{
 			if(red==red_up&&blue==blue_up&&white==white_up){
 				tmp_att_plus+=2;
 			}
+			else tmp_att_plus-=2;
 			return return_num;
 		}
 		void after_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
@@ -27,7 +28,7 @@ class stud_A8:public stud{
 		}
 		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);
-			return return_num;	
+			return 4;	
 		}
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_minus_red(target,teach,team,beside_team);	
@@ -46,4 +47,24 @@ class stud_A8:public stud{
 				(*x).att_mul/=1.2;
 			}
 		}
+		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		stud::skhit(target,teach,team,beside_team);
+		bool flag=0;
+		for(auto x:(target -> py)){
+			if(x==15){
+				flag=1;
+				break;
+			}
+		}
+		if(flag){
+			cwhite(-5);
+			target -> cred(-(target -> red_up)*0.2);
+
+		}
+		else{
+			cwhite(-15);
+			cblue(-1);
+			target -> cred(-(target -> red_up)*0.1);
+		}
+	}
 };

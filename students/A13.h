@@ -3,7 +3,7 @@
 class stud_A13:public stud{
 	public:
 		stud_A13(){
-			red_up-=10,blue_up+=30,white_up-=10;
+			red_up-=10,blue_up+=-10,white_up-=-30;
 			red=red_up,blue=blue_up,white=white_up;
 			att+=2;
 			py.push_back(12);
@@ -34,6 +34,10 @@ class stud_A13:public stud{
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_minus_red(target,teach,team,beside_team);	
 			    int final_att=((*target).att*(*target).att_mul*be_att_mul+(*target).tmp_att_plus);
-				white+=final_att;	
+				cwhite(final_att);	
 		}
+		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		stud::skhit(target,teach,team,beside_team);
+		
+	}
 };

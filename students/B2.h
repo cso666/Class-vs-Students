@@ -29,13 +29,27 @@ class stud_B2:public stud{
 		}
 		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
+			int fs=(target -> att)*(target -> att_mul)*(be_att_mul)+(target -> tmp_att_plus);
+			if(fs>=0.4*red&&rand()%20<=6){
+				cwhite(-12);
+			    return 5;
+			}
 			return return_num;		
+		}
+		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			int final_att=(10*att_mul*(*target).be_att_mul+tmp_att_plus);
+			(*target).cred(final_att*-1);
+			(*target).cblue(-12);
 		}
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			    stud::on_minus_red(target,teach,team,beside_team);	
-				if(rand()%3==1){
-					int fs=(target -> att)*(target -> att_mul)*(be_att_mul)+(target -> tmp_att_plus);
-					fs*=0.4;
+			    int fs=(target -> att)*(target -> att_mul)*(be_att_mul)+(target -> tmp_att_plus);
+			    if(fs>=0.4*red&&rand()%20<=6){
+			    	
+				}
+				if(rand()%20<=6){
+					
+					fs*=0.60;
 					target -> cred(-fs);
 				}	
 		}

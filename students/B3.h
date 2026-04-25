@@ -66,4 +66,8 @@ class stud_B3:public stud{
 				has_A10=0;
 			}
 		}
+		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		stud::skhit(target,teach,team,beside_team);
+		
+	}
 };

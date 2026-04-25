@@ -1,19 +1,7 @@
-bool isalive[35];
 #include"framew.h"
 #include"extra.h"
 #include"turn.h"
-#define sslp(n) Sleep(n*1000)
 //注意！需要图标的话用project文件夹下的compile.bat编译，调试时可以使用Devc++.
-int sbj_teacher;//老师
-map<string,int>subj;
-string subj2[13+10];//学科
-
-int day,clas;
-
-
-vector<void*>stud_list;
-vector<void*>listA,listB;
-int Anum=5,Bnum=5;
 
 int nowy=4;
 bool timeOfStarting=0;
@@ -80,6 +68,7 @@ void hitt(void*f1,void*f2,vector<void*>T1,vector<void*>T2){
 	}//日志窗口输出
 	//最终攻击
 	int final_att=((*ta).att*(*ta).att_mul*(*tb).be_att_mul+(*ta).tmp_att_plus);
+	if(ta->id==5&&final_att>30){unlockChallenge(2);}
 
 	if(debug_on){
 		logPrint(7,"  Damage Calculation:\n");
@@ -96,15 +85,31 @@ void hitt(void*f1,void*f2,vector<void*>T1,vector<void*>T2){
 		final_att=min(final_att,30);
 		if(debug_on&&old_final>30){logPrint(12,"    Damage capped to 30 (max damage limit)\n");}
 	}
-	if(sit1==3&&sit2==3){
+	if(sit1==3||sit2==3){
 		int old_final=final_att;
 		final_att=min(final_att,10);
 		if(debug_on&&old_final>10){logPrint(12,"    Damage capped to 10 (special damage limit)\n");}
+	}
+	if(sit1==4||sit2==4){
+		int old_final=final_att;
+		final_att=min(final_att,18);
+		if(debug_on&&old_final>18){logPrint(12,"    Damage capped to 10 (special damage limit)\n");}
+	}
+	if(sit1==5||sit2==5){
+		int old_final=final_att;
+		final_att*=0.3;
+		logPrint(12,"    Damage reduced 70% (special damage reduction)\n");
 	}
 	if(debug_on){logPrint(10,"    Final Damage: %d\n",final_att);}
 	int old_red=tb->red;
 	(*tb).cred(final_att*-1);
 	(*ta).cwhite(-5);
+	if(tb -> Bighuocar){
+		int A7rand=rand()%5;
+		if(A7rand==1){
+			ta -> cred(-final_att);
+		}
+	}
 	if(debug_on){
 		logPrint(7,"  Result:\n");
 		logPrint(12,"    %s HP: %d -> %d ( -%d )\n",tb->name.c_str(),old_red,tb->red,final_att);
@@ -117,13 +122,27 @@ void hitt(void*f1,void*f2,vector<void*>T1,vector<void*>T2){
 
 	if((*tb).status==0){
 		isalive[(*tb).id]=0;
+		checkProgress(2);  // 首次击杀成就
 		if(debug_on){logPrint(12,"  [DEATH] %s has been killed!\n",tb->name.c_str());}
+
+		for(auto*s:t1){
+			if(s&&s->id==28){((stud_B15*)s)->on_enemy_death(t1);}
+		}
 	}
 	if(debug_on){logPrint(7,"\n");}//日志窗口输出
 }
 
 //主动技能(under fixing)
 void sk_hitt(void*f1,void*f2,vector<void*>T1,vector<void*>T2){
+	if(f1==NULL||f2==NULL){return;}
+	vector<stud*>t1,t2;
+	for(auto y:T1){
+		if(y!=NULL){t1.push_back((stud*)y);}
+	}
+	for(auto y:T2){
+		if(y!=NULL){t2.push_back((stud*)y);}
+	}
+	((stud*)f1) -> skhit((stud*)f2,sbj_teacher,t1,t2);
 	return;
 }
 
@@ -567,23 +586,21 @@ void clear_action_area(){
 }
 
 void fight(int day, int cla){
-	if (day == 5 && cla >= 7) return;
-
-	if (cla == 8){
+		if(day==5&&cla>=7)return;
+	if(cla==8){
 		system("cls");
-		color(4);
-		printf("\n+=======================================================+\n");
+		color(11);
+		printf("+=======================================================+\n");
 		printf("|                LATE SELF-STUDY HOUR                   |\n");
 		printf("|             8 ROUNDS OF INTENSE BATTLE!               |\n");
 		printf("+=======================================================+\n\n");
 		color(7);
 		sslp(2);
-		turn(8, listA, listB, 1);
+		turn(8,listA,listB,1);
 		return;
 	}
 
 	system("cls");
-
 	color(11);
 	printf("\n+-----------------------------------------------------------+\n");
 	printf("|  Class: %s%*s|\n", subj2[classtable[day][cla]].c_str(), 50 - (int)subj2[classtable[day][cla]].length(), " ");
@@ -591,8 +608,14 @@ void fight(int day, int cla){
 	printf("|  gain +50%% attack power!                                  |\n");
 	printf("+-----------------------------------------------------------+\n");
 	color(7);
-
 	sett(listA, listB, 5);
+	checkProgress(3);  // 首次战斗成就
+
+	for(int i=0;i<stud_list.size();i++){
+		if(stud_list[i]==NULL){continue;}
+		tmp=(stud*)stud_list[i];
+		if(tmp->id==26){((stud_B13*)tmp)->on_class_start(classtable[day][cla]);}
+	}
 
 	for (int i = 0; i < stud_list.size(); i++){
 		if (stud_list[i] == NULL) continue;
@@ -613,7 +636,7 @@ void fight(int day, int cla){
 	int b_start_line = a_start_line;
 
 	// Team A 选择
-	bool a_selection_valid = false;
+	bool a_selection_valid=false,a_chosen=false;
 	while(!a_selection_valid){
 		lA.clear();
 		memset(isc1, 0, sizeof(isc1));
@@ -622,11 +645,10 @@ void fight(int day, int cla){
 		
 		gotoxy(0, 21);
 		color(14);
-		if(lA.empty()){
+		if(!a_chosen){
 			printf("\nTeam A - Select 3 students for battle (W/S to move, Enter to select):\n");
-		} else {
-			printf("\nTeam A - Invalid choice, please select again:\n");
-		}
+			a_chosen=1;
+		}else{printf("\nTeam A - Invalid choice, please select again:\n");}
 		color(7);
 		
 		for (int i = 0; i < 5; i++){
@@ -639,14 +661,24 @@ void fight(int day, int cla){
 			if (i == current_pos_A){
 				color(14);
 				printf("-> ");
-				color(10);
-				printf("%d. %s(ATT:%02d)          \n", i + 1, y.name.c_str(), int(y.att * y.att_mul));
+				if(y.id==26&&((stud_B13*)&y)->isAway()){
+					color(8);
+					printf("%d. %s(AWAY)     \n",i+1,y.name.c_str());
+				}else{
+					color(10);
+					printf("%d. %s(ATT:%02d)          \n",i+1,y.name.c_str(),int(y.att*y.att_mul));
+				}
 				color(7);
 			}
 			else {
 				printf("   ");
-				color(10);
-				printf("%d. %s(ATT:%02d)          \n", i + 1, y.name.c_str(), int(y.att * y.att_mul));
+				if(y.id==26&&((stud_B13*)&y)->isAway()){
+					color(8);
+					printf("%d. %s(AWAY)     \n",i+1,y.name.c_str());
+				}else{
+					color(10);
+					printf("%d. %s(ATT:%02d)          \n",i+1,y.name.c_str(),int(y.att*y.att_mul));
+				}
 				color(7);
 			}
 		}
@@ -715,6 +747,7 @@ void fight(int day, int cla){
 		bool all_dead = true;
 		for(auto x : lA){
 			stud* s = (stud*)x;
+			if(s->id==26&&((stud_B13*)s)->isAway()){continue;}
 			if(isalive[s->id] && s->red >= 0){
 				all_dead = false;
 				break;
@@ -735,7 +768,7 @@ void fight(int day, int cla){
 	}
 
 	// Team B 选择（同样逻辑）
-	bool b_selection_valid = false;
+	bool b_selection_valid=false,b_chosen=false;
 	while(!b_selection_valid){
 		lB.clear();
 		memset(isc2, 0, sizeof(isc2));
@@ -744,11 +777,10 @@ void fight(int day, int cla){
 		
 		gotoxy(0, 21);
 		color(14);
-		if(lB.empty()){
+		if(!b_chosen){
 			printf("\nTeam B - Select 3 students for battle (W/S to move, Enter to select):\n");
-		} else {
-			printf("\nTeam B - Invalid choice, please select again:\n");
-		}
+			b_chosen=1;
+		}else{printf("\nTeam B - Invalid choice, please select again:\n");}
 		color(7);
 		
 		for (int i = 0; i < 5; i++){
@@ -762,13 +794,24 @@ void fight(int day, int cla){
 				color(14);
 				printf("-> ");
 				color(9);
-				printf("%d. %s(ATT:%02d)           \n", i + 1, y.name.c_str(), int(y.att * y.att_mul));
+				if(y.id==26&&((stud_B13*)&y)->isAway()){
+					color(8);
+					printf("%d. %s(AWAY)     \n",i+1,y.name.c_str());
+				}else{
+					color(10);
+					printf("%d. %s(ATT:%02d)          \n",i+1,y.name.c_str(),int(y.att*y.att_mul));
+				}
 				color(7);
 			}
 			else {
 				printf("   ");
-				color(9);
-				printf("%d. %s(ATT:%02d)           \n", i + 1, y.name.c_str(), int(y.att * y.att_mul));
+				if(y.id==26&&((stud_B13*)&y)->isAway()){
+					color(8);
+					printf("%d. %s(AWAY)     \n",i+1,y.name.c_str());
+				}else{
+					color(9);
+					printf("%d. %s(ATT:%02d)          \n",i+1,y.name.c_str(),int(y.att*y.att_mul));
+				}
 				color(7);
 			}
 		}
@@ -837,6 +880,7 @@ void fight(int day, int cla){
 		bool all_dead = true;
 		for(auto x : lB){
 			stud* s = (stud*)x;
+			if(s->id==26&&((stud_B13*)s)->isAway()){continue;}
 			if(isalive[s->id] && s->red >= 0){
 				all_dead = false;
 				break;
@@ -880,7 +924,38 @@ void fight(int day, int cla){
 	printf("\n                                                  ");
 	getch();
 
-	turn(3, lA, lB, 0);
+	turn(3,lA,lB,0);
+
+	// 检查残血/满血通关成就
+	bool allAlive=1,allFull=1,anyLow=0;
+
+	for(auto x:lA){
+		stud* s=(stud*)x;
+		if(isalive[s->id]&&s->red>=0){
+			double ratio=(double)s->red/s->red_up;
+			if(ratio<=0.2){anyLow=1;}
+			if(s->red<s->red_up){allFull=0;}
+		}
+	}
+	for(auto x:lB){
+		stud* s=(stud*)x;
+		if(isalive[s->id]&&s->red>=0){
+			double ratio=(double)s->red/s->red_up;
+			if(ratio<=0.2){anyLow=1;}
+			if(s->red<s->red_up){allFull=0;}
+		}
+	}
+
+	if(anyLow){checkProgress(7);}
+	if(allFull){checkProgress(8);}
+
+	for(int i = 0; i < stud_list.size(); i++){
+		if(stud_list[i] == NULL) continue;
+		tmp = (stud*)stud_list[i];
+		if(tmp->id == 28){
+			((stud_B15*)tmp)->on_class_end();
+		}
+	}
 
 	for (int i = 0; i < stud_list.size(); i++){
 		if (stud_list[i] == NULL) continue;
@@ -936,6 +1011,8 @@ void startASCIIart(){
 	getch();
 }
 
+
+
 int main(){
 	srand(time(nullptr)*rand());
 
@@ -946,6 +1023,9 @@ int main(){
         debug_on = true;
         createLogWindow();
     }
+	// 加载成就
+	loadAchievements();
+	checkProgress(1);  // 首次启动成就
 
 	HANDLE hConsole=GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO cursorInfo;
@@ -965,12 +1045,13 @@ start:
 	printf("\
 +------------------------+\n\
 |   Class vs. Students   |\n\
-|           v0.3 rc-2.8  |\n\
+|           v0.3 rc-2.9  |\n\
 +------------------------+\n");
 	color(7);
 	printf("\
 |       Start Game       |\n\
-|          Rule          |\n\
+|        Guidance        |\n\
+|      Achievements      |\n\
 |       Our Github       |\n\
 |        Settings        |\n\
 |          Exit          |\n");
@@ -993,29 +1074,34 @@ start:
 		color(7);
 		printf("|   ");
 		if(nowy>4&&(cstart=='w'||cstart=='W')){nowy--;}
-		else if(nowy<8&&(cstart=='s'||cstart=='S')){nowy++;}
+		else if(nowy<9&&(cstart=='s'||cstart=='S')){nowy++;}
 		color(14);
 		gotoxy(0,nowy);
 		printf("| ->");
 		cstart=getch();
 	}
 	if(nowy==5){
-		system("start README.md");
+		guide();
 		goto start;
 	}
 	else if(nowy==6){
+		achievementMenu();
+		goto start;
+	}
+	else if(nowy==7){
 		system("start https://github.com/cso666/Class-vs-Students");
 		goto start;
 	}
-    else if(nowy==7){// Settings
+    else if(nowy==8){// Settings
         settingsMenu();
         goto start;
     }
-	else if(nowy==8){
+	else if(nowy==9){
 		gotoxy(11,8);
 		ppput("BYE!",0.2);
 		gotoxy(0,14);
 
+		color(7);
 		cursorInfo.bVisible=1;
 		SetConsoleCursorInfo(hConsole,&cursorInfo);//恢复光标
 		closeLogWindow();//关闭日志窗口
@@ -1112,6 +1198,15 @@ start:
 
 	while(Anum>0&&Bnum>0){
 		for(day=1;day<=5;day++){
+			for(int i=0;i<stud_list.size();i++){
+				if(stud_list[i]==NULL||!isalive[((stud*)stud_list[i])->id]){continue;}
+				tmp=(stud*)stud_list[i];
+				if(tmp->id==26){
+					((stud_B13*)tmp)->resetDaily();
+					((stud_B13*)tmp)->on_day_start();
+				}
+			}
+
 			for(clas=1;clas<=8;clas++){
 				if(Anum<=0||Bnum<=0){continue;}
 				if(clas==5||clas==8){
@@ -1145,6 +1240,8 @@ start:
 			color(7);
 		}
 	}
+
+	if(settings.auto_insane&&(Anum<=0||Bnum<=0)){unlockChallenge(1);}
 
 	system("cls");
 	color(14);

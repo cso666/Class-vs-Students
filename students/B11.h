@@ -31,8 +31,12 @@ class stud_B11:public stud{
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			    stud::on_minus_red(target,teach,team,beside_team);		
 		}
-		virtual void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_start(target,teach,team,beside_team);
 			for(auto y:team)(*y).cblue(10);
 		}
+		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		stud::skhit(target,teach,team,beside_team);
+		
+	}
 };

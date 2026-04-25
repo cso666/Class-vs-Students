@@ -1,12 +1,15 @@
 #include"A0.h"
 
+
 class stud_A10:public stud{
 	public:
-		int sugar=0;
+		
+		//int sugar=0;
 		stud_A10(){
-			sugar=0;
-			blue_mul*=1.2;
-			red_up-=20,blue_up-=40,white_up+=0;
+			//sugar=0;
+			blue_mul*=0.8;
+			blue_mul_p*=1.2;
+			red_up-=20,blue_up=100,white_up+=20;
 			red=red_up,blue=blue_up,white=white_up;
 			att+=5;
 			py.push_back(5);
@@ -18,8 +21,7 @@ class stud_A10:public stud{
 		}
 		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::before_att(target,teach,team,beside_team);
-			
-			sugar+=3;
+			(*target).sugar+=1;
 			return return_num;
 		}
 		void after_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
@@ -33,7 +35,11 @@ class stud_A10:public stud{
 			stud::on_minus_red(target,teach,team,beside_team);	
 			   if(status==0||status==-1){
 			   	for(auto x:beside_team)
-			   		(*x).cred(-1*sugar);
+			   		(*x).cred(-1*(*x).sugar);
 			   }
 		}
+		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		stud::skhit(target,teach,team,beside_team);
+		
+	}
 };

@@ -34,7 +34,7 @@ class stud_B14:public stud{
 			    stud::on_minus_red(target,teach,team,beside_team);		
 			cnt_hitme+1;
 		}
-		virtual void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_start(target,teach,team,beside_team);
 			int sbhc=rand()*rand()%3;
 			if(sbhc==1)cred(6);
@@ -44,4 +44,8 @@ class stud_B14:public stud{
 				if(att+tmp_att_plus-3>=0)tmp_att_plus-=3,att_mul*=1+cnt_hitme*0.05;
 			}
 		}
+		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		stud::skhit(target,teach,team,beside_team);
+		
+	}
 };

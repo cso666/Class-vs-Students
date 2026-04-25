@@ -7,6 +7,7 @@ class stud_A7:public stud{
 			have_dead=0;
 			red_up+=180,blue_up-=0,white_up+=100;
 			red=red_up,blue=blue_up,white=white_up;
+			Bighuocar=0;
 			att-=8;
 			py.push_back(15);
 			ct1.push_back("BigYun");//大运之力
@@ -32,9 +33,20 @@ class stud_A7:public stud{
 			int final_att=((*target).att*(*target).att_mul*be_att_mul+(*target).tmp_att_plus);
 			 if(red<=0&&white>1&&have_dead==0){
 			 	have_dead=1;
+			 	red_up=0.5*red_up;
 			 	red=0.5*red_up;
+			 	white=1;
 			 	status=1;
 			 }  
 			(*target).cred(-int(0.3*final_att)); 	
+		}
+		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		stud::skhit(target,teach,team,beside_team);
+		cwhite(-5);
+		Bighuocar=1;
+		}
+		void on_turn_end(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			stud::on_turn_end(target,teach,team,beside_team);
+			Bighuocar=0;
 		}
 };

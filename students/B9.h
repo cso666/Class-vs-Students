@@ -34,7 +34,7 @@ class stud_B9:public stud{
 			    stud::on_minus_red(target,teach,team,beside_team);
 						
 		}
-		virtual void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_start(target,teach,team,beside_team);
 			for(auto y:team){
 				(*y).cred((*y).red_up*0.05);
@@ -58,4 +58,8 @@ class stud_B9:public stud{
 				tw/=10;
 			}if(isin2)cred(11),cwhite(16);
 		}
+		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		stud::skhit(target,teach,team,beside_team);
+		
+	}
 };

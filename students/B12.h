@@ -46,9 +46,13 @@ class stud_B12:public stud{
 			
 					
 		}
-		virtual void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_start(target,teach,team,beside_team);
 			cred(-3);
 			cwhite(6);
 		}
+		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		stud::skhit(target,teach,team,beside_team);
+		
+	}
 };

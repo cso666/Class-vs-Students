@@ -4,7 +4,7 @@ class stud_A3:public stud{
 	public:
 		vector<pair<stud*,int> >hurtme; 
 		stud_A3(){
-			red_up+=20,blue_up+=5,white_up-=10;
+			red_up+=20,blue_up+=5,white_up+=10;
 			red=red_up,blue=blue_up,white=white_up;
 			att-=8;
 			hurtme.clear();
@@ -42,7 +42,8 @@ class stud_A3:public stud{
 			lry++;
 		}
 		if(lry==3){
-			target -> cblue(target -> blue);
+			(*target).blue=0;
+			cblue(-20);
 		}
 	    return return_num;
 	}
@@ -60,5 +61,13 @@ class stud_A3:public stud{
 				i--;
 			}
 		}
+	}
+	//好写！lol
+	void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		stud::skhit(target,teach,team,beside_team);
+		cwhite(-5);
+		cred(-15);
+		cblue(-25);
+		target -> cred(-5);
 	}
 };

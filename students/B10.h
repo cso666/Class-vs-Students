@@ -42,9 +42,13 @@ class stud_B10:public stud{
 				cwhite(0.9*white);
 			}
 		}
-		virtual void on_turn_end(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		void on_turn_end(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_end(target,teach,team,beside_team);
 			att_mul/=0.2*cnt_x;
 			be_att_mul/=0.2*cnt_x;
 		}
+		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		stud::skhit(target,teach,team,beside_team);
+		
+	}
 };

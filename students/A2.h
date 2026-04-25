@@ -41,4 +41,24 @@ class stud_A2:public stud{
 	void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 		   stud::on_minus_red(target,teach,team,beside_team);	 	
 	}
+	void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		stud::skhit(target,teach,team,beside_team);
+		cwhite(-30);
+		int final_att=(2*att*att_mul+tmp_att_plus)*(target -> be_att_mul);
+		if(final_att<=30){
+			target->cred(-final_att);
+		}
+		else if(final_att<45){
+			target->cred(-30);
+			target->cred(-(final_att-30));
+		}
+		else if(final_att>=45){
+			target->cred(-30);
+			target->cred(-15);
+		}
+		int A2sktrand=rand()%5;
+		if(A2sktrand>=1&&A2sktrand<=4){
+			cred(-15);
+		}
+	}
 };

@@ -1,10 +1,10 @@
 #include"A0.h"
-
+int classtablee[100+10][100+10]={{6,2,8,3,9,1,0},{2,13,4,1,7,8,5},{1,1,2,3,11,8,0},{1,8,12,7,10,4,2},{3,4,2,2,6,5,0}};
 class stud_A12: public stud{
 	public:
 		double base_be_att_mul = 1.0;
 		stud_A12(){
-			red_up+=10;blue_up+=10;white_up-=20;
+			red_up+=10;blue_up+=-20;white_up-=-10;
 			red=red_up;blue=blue_up;white=white_up;
 			att+=0;
 			py.push_back(15);
@@ -21,7 +21,7 @@ class stud_A12: public stud{
 			if((*target).id==8){
 				int final_att=(att*att_mul*(*target).be_att_mul+tmp_att_plus);
 				for(auto x:beside_team){
-					(*x).cred(-final_att*0.10);
+					if((*x).id!=8)(*x).cred((rand() % 40) *0.01*final_att);
 				}
 			}	
 			return return_num;
@@ -41,5 +41,14 @@ class stud_A12: public stud{
 		void on_turn_end(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_end(target,teach,team,beside_team);
 			be_att_mul = base_be_att_mul;
+			int date=tim/26;
+			if(tim%26!=0)return;
+			int HTclas=0;
+			for(int i=0;i<7;i++)HTclas+=classtablee[date][i]==2;
+			cred(HTclas*5);
 		}
+		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		stud::skhit(target,teach,team,beside_team);
+		
+	}
 };

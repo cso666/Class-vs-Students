@@ -89,5 +89,9 @@ class stud_B5:public stud{
 				be_att_mul+=0.4;
 			}
 		}
+		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		stud::skhit(target,teach,team,beside_team);
+		
+	}
 
 };

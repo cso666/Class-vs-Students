@@ -50,4 +50,8 @@ class stud_B6:public stud{
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			    stud::on_minus_red(target,teach,team,beside_team);		
 		}
+		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		stud::skhit(target,teach,team,beside_team);
+		
+	}
 };

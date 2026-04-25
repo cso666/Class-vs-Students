@@ -3,9 +3,9 @@
 class stud_A9:public stud{
 	public:
 		stud_A9(){
-			red_up-=15,blue_up+=80,white_up+=10;
+			red_up-=15,blue_up+=10,white_up+=80;
 			red=red_up,blue=blue_up,white=white_up;
-			att+=5;
+			att+=3;
 			py.push_back(15);
 			ct1.push_back("MrMonitor");//班长大人
 			//(Ori: ClassLongBigHuman?????)
@@ -43,4 +43,23 @@ class stud_A9:public stud{
 				(*x).att_mul/=1.35;
 			}
 		}
+		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		stud::skhit(target,teach,team,beside_team);
+		cwhite(-5);
+		int final_att=(10*att_mul+tmp_att_plus)*(target -> be_att_mul);
+		if(final_att<=30){
+			target->cred(-final_att);
+		}
+		else if(final_att<40){
+			target->cred(-30);
+			target->cred(-(final_att-30));
+		}
+		else if(final_att>=40){
+			target->cred(-30);
+			target->cred(-10);
+		}
+		for(auto x:team){
+			x -> cred(final_att/3);
+		}
+	}
 };

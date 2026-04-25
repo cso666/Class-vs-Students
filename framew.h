@@ -13,8 +13,21 @@
 #include<conio.h>
 #include<map>
 #include<time.h>
-#include<stdarg.h>	
-using namespace std;	       
+#include<stdarg.h>
+#define sslp(n) Sleep(n*1000)
+using namespace std;
+
+int sbj_teacher;//老师
+map<string,int>subj;
+string subj2[13+10];//学科
+
+int day,clas;
+bool isalive[35];
+
+vector<void*>stud_list;
+vector<void*>listA,listB;
+int Anum=5,Bnum=5;
+
 #include"students/A0.h"
 #include"students/A1.h"
 #include"students/A2.h"
