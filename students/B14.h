@@ -1,8 +1,9 @@
-   #include "A0.h"
+#include "A0.h"
 
 class stud_B14:public stud{
 	public:
 		int cnt_hitme;
+		
 		stud_B14(){
 			cnt_hitme=2;
 			red_up-=24,blue_up+=8,white_up-=10;
@@ -14,38 +15,46 @@ class stud_B14:public stud{
 			id=27;
 			name="B14";
 		}
+		
 		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::before_att(target,teach,team,beside_team);
 			return return_num;
 		}
+		
 		void after_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::after_att(target,teach,team,beside_team);		
-			int final_att=((*target).att*(*target).att_mul*be_att_mul+(*target).tmp_att_plus);
 			int sbhc=rand()*rand()%3,rzhc=rand()*rand()%team.size();
 			if(sbhc==1)(*team[rzhc]).cred(6);
 			else if(sbhc==2)(*team[rzhc]).cwhite(6);
 			else (*team[rzhc]).cblue(6);
 		}
+		
 		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
 			return 3;		
 		}
+		
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			    stud::on_minus_red(target,teach,team,beside_team);		
-			cnt_hitme+1;
+			stud::on_minus_red(target,teach,team,beside_team);		
+			cnt_hitme++;
 		}
+		
 		void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_start(target,teach,team,beside_team);
 			int sbhc=rand()*rand()%3;
 			if(sbhc==1)cred(6);
 			else if(sbhc==2)cwhite(6);
 			else cblue(6);
+			int tmp_tmp_att_plus=get_tmp_att_plus();
 			if(blue<60){
-				if(att+tmp_att_plus-3>=0)tmp_att_plus-=3,att_mul*=1+cnt_hitme*0.05;
+				if(att+tmp_tmp_att_plus-3>=0){
+					tmp_att_plus[0].first-=3;
+					att_mul.push_back({1+cnt_hitme*0.05,0x7f7f7f7f});
+				}
 			}
 		}
-		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-		stud::skhit(target,teach,team,beside_team);
 		
-	}
+		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			stud::skhit(target,teach,team,beside_team);
+		}
 };

@@ -2,10 +2,13 @@
 
 class stud_A8:public stud{
 	public:
+		bool hasuse;
+		
 		stud_A8(){
 			red_up+=0,blue_up+=0,white_up+=0;
 			red=red_up,blue=blue_up,white=white_up;
 			att-=2;
+			hasuse=0;
 			py.push_back(15);
 			ct1.push_back("TurtleLivesLong");//神龟虽寿
 			ct1.push_back("BrainStorm");//头脑风暴
@@ -15,56 +18,53 @@ class stud_A8:public stud{
 			id=8;
 			name="A08";
 		}
+		
 		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::before_att(target,teach,team,beside_team);
-			if(red==red_up&&blue==blue_up&&white==white_up){
-				tmp_att_plus+=2;
-			}
-			else tmp_att_plus-=2;
+			if(red==red_up&&blue==blue_up&&white==white_up&&att==8){att+=4;}
+			else if(att==12){att-=4;}
 			return return_num;
 		}
+		
 		void after_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-					stud::after_att(target,teach,team,beside_team);	
+			stud::after_att(target,teach,team,beside_team);	
 		}
+		
 		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);
 			return 4;	
 		}
+		
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			stud::on_minus_red(target,teach,team,beside_team);	
-			  int final_att=((*target).att*(*target).att_mul*be_att_mul+(*target).tmp_att_plus);
-			  cred(final_att-8);  	
+			stud::on_minus_red(target,teach,team,beside_team);		
 		}
+		
 		void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_start(target,teach,team,beside_team);
-			for(auto x:team){
-				(*x).att_mul*=1.2;
-			}
+			for(auto x:team){(*x).att_mul.push_back({1.2,1});}
 		}
-		void on_turn_end(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			stud::on_turn_end(target,teach,team,beside_team);
-			for(auto x:team){
-				(*x).att_mul/=1.2;
-			}
-		}
+		
 		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-		stud::skhit(target,teach,team,beside_team);
-		bool flag=0;
-		for(auto x:(target -> py)){
-			if(x==15){
-				flag=1;
-				break;
+			stud::skhit(target,teach,team,beside_team);
+			bool flag=0;
+			for(auto x:(target -> py)){
+				if(x==15){
+					flag=1;
+					break;
+				}
+			}
+			if(flag&&!hasuse){
+				hasuse=1;
+				cwhite(-5);
+				target->cred(-(target->red_up)*0.2);
+			}else{
+				cwhite(-15);
+				cblue(-1);
+				target->cred(-(target->red_up)*0.1);
 			}
 		}
-		if(flag){
-			cwhite(-5);
-			target -> cred(-(target -> red_up)*0.2);
-
+		
+		void on_day_start(int subject_id){
+			hasuse=0;
 		}
-		else{
-			cwhite(-15);
-			cblue(-1);
-			target -> cred(-(target -> red_up)*0.1);
-		}
-	}
 };
