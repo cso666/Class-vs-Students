@@ -32,7 +32,8 @@ class stud_A8:public stud{
 		
 		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);
-			return 4;	
+			if(HavCt[1])return 4;	
+			else return return_num;
 		}
 		
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
@@ -41,7 +42,7 @@ class stud_A8:public stud{
 		
 		void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_start(target,teach,team,beside_team);
-			for(auto x:team){(*x).att_mul.push_back({1.2,1});}
+			if(HavCt[2])for(auto x:team){(*x).att_mul.push_back({1.2,1});}
 		}
 		
 		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){

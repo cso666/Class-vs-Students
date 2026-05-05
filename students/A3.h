@@ -16,7 +16,7 @@ class stud_A3:public stud{
 			py.push_back(15);
 			ct1.push_back("BecomeRed");//红温
 			ct1.push_back("ThingsDisappeared");//东西被偷了
-			ct1.push_back("BecomeRed2nd");//红温2nd
+			//ct1.push_back("BecomeRed2nd");红温2nd
 			ct2.push_back("YouMother");//
 			id=3;
 			name="A03";
@@ -27,7 +27,7 @@ class stud_A3:public stud{
 			
 			target->be_att_mul.push_back({1.30,2});
 			hurtme.push_back({target,2});
-			if(rand()%2){
+			if(HavCt[2])if(rand()%2){
 				cblue(-5);
 				cred(5);
 				cwhite(5);
@@ -48,20 +48,23 @@ class stud_A3:public stud{
 		
 		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num = stud::on_before_be_atted(target,teach,team,beside_team);	
-			target->be_att_mul.push_back({1.30,2});
-			hurtme.push_back({target,2});
-			int tmp=0;
-			int lry=0;
-			for(auto x : hurtme){
-				if(hurtme[lry].first==target){
-					tmp++;
+			if(HavCt[1]){
+				target->be_att_mul.push_back({1.30,2});
+				hurtme.push_back({target,2});
+				int tmp=0;
+				int lry=0;
+				for(auto x : hurtme){
+					if(hurtme[lry].first==target){
+						tmp++;
+					}
+					lry++;
 				}
-				lry++;
+				if(tmp==3){
+					(*target).blue=0;
+					cblue(-20);
+				}
 			}
-			if(tmp==3){
-				(*target).blue=0;
-				cblue(-20);
-			}
+			
 			return return_num;
 		}
 		

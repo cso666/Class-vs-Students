@@ -24,10 +24,12 @@ class stud_A1:public stud{
 		
 		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::before_att(target,teach,team,beside_team);
-			if((rand()*rand())%20==16){
+			if(HavCt[1])if((rand()*rand())%20==16){
 				tmp_att_plus.push_back({5,1});
-				(*target).can_act=false;
-				(*target).cant_act++;
+				if(HavCt[2]){
+					(*target).can_act=false;
+					(*target).cant_act++;	
+				}
 				is_plusatt=1;
 			}
 			return return_num;

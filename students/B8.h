@@ -17,7 +17,7 @@ class stud_B8:public stud{
 			fight_turnsLeft=0;
 			py.push_back(14);
 			ct1.pb("BreachOfFaith");
-			ct2.pb("YouKongyiJi");
+			ct2.pb("KongyiJi");
 			ct1.pb("WantFight?");
 			id=21;
 			name="B08";
@@ -26,7 +26,7 @@ class stud_B8:public stud{
 		}
 		
 		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			if(teach==2){att_mul.push_back({2.0,1});}
+			if(HavCt[1])if(teach==2){att_mul.push_back({2.0,1});}
 			return stud::before_att(target,teach,team,beside_team);
 		}
 
@@ -42,12 +42,12 @@ class stud_B8:public stud{
 		void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_start(target,teach,team,beside_team);
 			
-			if(teach==4){
+			if(HavCt[1])if(teach==4){
 				att_mul.push_back({0.7,1});
 				be_att_mul.push_back({1.4,1});
 				ifai=1;
 			}
-			for(auto y:beside_team){
+			if(HavCt[2])for(auto y:beside_team){
 				if((*y).id==19){
 					cblue(-3);
 					(*y).cblue(-3);
@@ -57,7 +57,7 @@ class stud_B8:public stud{
 			}
 			
 			// WantFight? 持续效果
-			if(fight_active){
+			if(HavCt[2])if(fight_active){
 				// 每回合 +2 HP
 				cred(2);
 				

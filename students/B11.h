@@ -10,10 +10,11 @@ public:
 		att-=1;
 		py.push_back(8);
 		py.push_back(14);
-		ct1.pb("Defections");
+		
 		ct1.pb("OneMoreFoot");
 		ct1.pb("SongsTalent");
 		ct2.pb("Guest");
+		ct1.pb("Defections");
 		id=24;
 		name="B11";
 		guest_turnsLeft=0;
@@ -24,23 +25,26 @@ public:
 		int return_num=stud::before_att(target,teach,team,beside_team);
 		
 		// OneMoreFoot
-		int final_att=get_att()*target->get_be_att_mul();
-		if(target->red<=final_att){
-			if(rand()%100<99){
-				target->cblue(-5);
-				if(debug_on){
-					logPrint(12,"[B11] OneMoreFoot: Attack cancelled, %s loses 5 SAN instead.\n",target->name.c_str());
+		if(HavCt[1]){
+			int final_att=get_att()*target->get_be_att_mul();
+			if(target->red<=final_att){
+				if(rand()%100<99){
+					target->cblue(-5);
+					if(debug_on){
+						logPrint(12,"[B11] OneMoreFoot: Attack cancelled, %s loses 5 SAN instead.\n",target->name.c_str());
+					}
+					return 1;
 				}
-				return 1;
-			}
+			}	
 		}
+		
 		
 		return return_num;
 	}
 
 	void after_att(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team){
 		stud::after_att(target,teach,team,beside_team);
-		if(target->red<=25){
+		if(HavCt[1])if(target->red<=25){
 			tmp_att_plus.push_back({4,0x7f7f7f7f});
 		}
 	}
@@ -56,7 +60,7 @@ public:
 	void on_turn_start(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team){
 		stud::on_turn_start(target,teach,team,beside_team);
 		// SongsTalent
-		for(auto y:team){y->cblue(10);}
+		if(HavCt[2])for(auto y:team){y->cblue(10);}
 		
 		// 嘉宾
 		if(guest_turnsLeft>0){

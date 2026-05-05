@@ -35,14 +35,14 @@ class stud_A7:public stud{
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_minus_red(target,teach,team,beside_team);	
 			int final_att=(*target).get_att()*get_be_att_mul();
-			 if(red<=0&&white>1&&have_dead==0){
+			 if(HavCt[2])if(red<=0&&white>1&&have_dead==0){
 			 	have_dead=1;
 			 	red_up=0.5*red_up;
 			 	red=0.5*red_up;
 			 	white=1;
 			 	status=1;
 			 }  
-			(*target).cred(-int(0.3*final_att)); 	
+			//(*target).cred(-int(0.3*final_att)); 	
 		}
 		
 		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){

@@ -23,11 +23,14 @@ public:
 	int before_att(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team){
 		int return_num=stud::before_att(target,teach,team,beside_team);
 		int diff=white-target->white;
-		cwhite(5);
-		cwhite(diff/3);
-		if(debug_on){
-			logPrint(10,"[B12] HitPlane: white diff=%d, adjusted STA by %d\n",diff,diff/3);
+		if(HavCt[1]){
+			cwhite(5);
+			cwhite(diff/3);
+			if(debug_on){
+				logPrint(10,"[B12] HitPlane: white diff=%d, adjusted STA by %d\n",diff,diff/3);
+			}	
 		}
+		
 		return return_num;
 	}
 
@@ -43,7 +46,7 @@ public:
 		stud::on_minus_red(target,teach,team,beside_team);
 		int final_att=target->get_att()*get_be_att_mul();
 		
-		if(white>=max(30,2*final_att)){
+		if(HavCt[2])if(white>=max(30,2*final_att)){
 			cred(final_att);
 			cwhite(-2*final_att);
 			if(debug_on){
@@ -51,7 +54,7 @@ public:
 			}
 		}
 		
-		if(red<=0&&have_dead==0){
+		if(HavCt[1])if(red<=0&&have_dead==0){
 			have_dead=1;
 			red_up=red_up-54;
 			red=red_up;

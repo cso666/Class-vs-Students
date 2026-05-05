@@ -24,8 +24,9 @@ class stud_A10:public stud{
 		}
 
 	public:
+		bool ned=0;
 		stud_A10(){
-			blue_mul[0].first*=0.8;
+			ned=0;
 			red_up-=20;
 			blue_up=100;
 			white_up+=20;
@@ -47,7 +48,7 @@ class stud_A10:public stud{
 
 		int before_att(stud*target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::before_att(target,teach,team,beside_team);
-			sugar[(*target).id]+=1;
+			if(HavCt[1])sugar[(*target).id]+=1;
 			return return_num;
 		}
 		
@@ -61,14 +62,19 @@ class stud_A10:public stud{
 		
 		void on_minus_red(stud*target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_minus_red(target,teach,team,beside_team);
-			if(status==0||status==-1){
+			if(HavCt[1])if(status==0||status==-1){
 				for(auto x:beside_team){x->cred(-2*sugar[(*x).id]);}
 			}
 		}
 
 		void on_turn_start(stud*target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_start(target,teach,team,beside_team);
-
+			if(ned==0&&HavCt[2]){
+				blue_mul[0].first*=0.8;
+				blue_mul_p[0].first*=1.2;
+				ned=1;
+			}
+		
 			if(sk_ready&&tim%26==3){
 				sk_pre(target,teach,team,beside_team,sk_cw);
 				sk_ready=0;

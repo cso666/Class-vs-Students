@@ -148,7 +148,7 @@ scapegoat->name.c_str(),tb->name.c_str());}
 
 	if((*tb).status==0){
 		isalive[(*tb).id]=0;
-		checkProgress(2);  // 首次击杀成就
+		checkProgress(3);  // 首次击杀成就
 		if(debug_on){logPrint(12,"  [DEATH] %s has been killed!\n",tb->name.c_str());}
 
 		for(auto*s:t1){
@@ -257,10 +257,12 @@ static bool endBattle(stuV&teamA,stuV&teamB){
 	}
 	if(!aHasAlive||!bHasAlive){
 		Anum=0,Bnum=0;
-		for(auto*s:teamA){
+		for(auto*x:listA){
+			stud* s=(stud*)x;
 			if(s&&isalive[s->id]&&s->red>=0){Anum++;}
 		}
-		for(auto*s:teamB){
+		for(auto*x:listB){
+			stud* s=(stud*)x;
 			if(s&&isalive[s->id]&&s->red>=0){Bnum++;}
 		}
 		return 1;
@@ -402,7 +404,7 @@ static stud*selTar(stud* atter,stuV& defer,const string& teamN,int startL){
 	clear_action_area();
 	gotoxy(0,19);
 	color(14);
-	printf("%s - Select your tar (W/S keys, Enter to confirm):\n",teamN.c_str());
+	printf("%s - Select your target (W/S keys, Enter to confirm):\n",teamN.c_str());
 	for(int i=0;i<size;i++){
 		if(!defer[i]){continue;}
 		stud*s=defer[i];
@@ -472,13 +474,20 @@ static stud*selTar(stud* atter,stuV& defer,const string& teamN,int startL){
 
 // ========== 选择行动类型 ==========
 static actCho selAct(stud* atter,const string& teamN){
-	bool canSk=(atter->white>0&&!atter->ct2.empty());
-	if(atter->id==12&&((stud_A12*)atter)->ega_used){canSk=0;}
-	if(atter->id==13){canSk=(atter->white>=atter->white_up*0.7);}
-	if(atter->id==21&&((stud_B8*)atter)->fight_active){canSk=0;}
-	if(atter->id==24&&((stud_B11*)atter)->guest_turnsLeft>0){canSk=0;}
-	if(atter->id==25&&((stud_B12*)atter)->shake_active){canSk=0;}
-	if(atter->id==26){canSk=(atter->white>=20);}
+	bool canSk=(atter->white>0&&!atter->ct2.empty()),staeno=1,notused=1,skilled=1;
+	if(atter->id==12&&((stud_A12*)atter)->ega_used){canSk=notused=0;}
+	if(atter->id==13){canSk=staeno=(atter->white>=atter->white_up*0.7);}
+	if(atter->id==21&&((stud_B8*)atter)->fight_active){canSk=notused=0;}
+	if(atter->id==22){
+		stud_B9*b9=(stud_B9*)atter;
+		if(!atter->white<10){canSk=staeno=0;}
+		if(!b9->can_use_this_day(day)){canSk=notused=0;}
+	}
+	if(atter->id==24&&((stud_B11*)atter)->guest_turnsLeft>0){canSk=staeno=0;}
+	if(atter->id==25&&((stud_B12*)atter)->shake_active){canSk=staeno=0;}
+	if(atter->id==26){canSk=staeno=(atter->white>=20);}
+	canSk&=(*atter).HavCt[0];
+	skilled&=(*atter).HavCt[0];
 	int choice=0;
 	clear_action_area();
 	gotoxy(0,19);
@@ -503,7 +512,8 @@ static actCho selAct(stud* atter,const string& teamN){
 			printf("-> ");
 			if(!canSk){
 				color(8);
-				if(atter->id==12&&((stud_A12*)atter)->ega_used){printf("SKILL: %s [Used]",atter->ct2[0].c_str());}
+				if(!skilled){printf("SKILL: %s [Unskilled]",atter->ct2[0].c_str());}
+				else if(!notused){printf("SKILL: %s [Used]",atter->ct2[0].c_str());}
 				else{printf("SKILL: %s (Not enough stamina)",atter->ct2.empty()?"NO SKILL":atter->ct2[0].c_str());}
 			}else{
 				color(11);
@@ -513,7 +523,8 @@ static actCho selAct(stud* atter,const string& teamN){
 			printf("   ");
 			if(!canSk){
 				color(8);
-				if(atter->id==12&&((stud_A12*)atter)->ega_used){printf("SKILL: %s [Used]",atter->ct2[0].c_str());}
+				if(!skilled){printf("SKILL: %s [Unskilled]",atter->ct2[0].c_str());}
+				else if(!notused){printf("SKILL: %s [Used]",atter->ct2[0].c_str());}
 				else{printf("SKILL: %s (Not enough stamina)",atter->ct2.empty()?"NO SKILL":atter->ct2[0].c_str());}
 			}else{
 				color(11);
@@ -525,8 +536,8 @@ static actCho selAct(stud* atter,const string& teamN){
 		if(key=='w'||key=='W'){choice=0;}
 		else if(key=='s'||key=='S'){choice=1;}
 		else if(key==13){
-			if(choice==0){return {0,atter};}
-			if(choice==1&&canSk){return {1,atter};}
+			if(choice==0){return{0,atter};}
+			if(choice==1&&canSk){return{1,atter};}
 		}
 	}
 }
@@ -646,17 +657,20 @@ static void turn(int rounds,voiV lA,voiV lB,bool isL){
 }
 
 // ========== fight 函数 ==========
-void fight(int day, int cla){
+void fight(int day,int cla){
 	if(day==5&&cla>=7)return;
 	if(cla==8){
 		system("cls");
 		color(11);
-		printf("+=======================================================+\n");
-		printf("|                LATE SELF-STUDY HOUR                   |\n");
-		printf("|             8 ROUNDS OF INTENSE BATTLE!               |\n");
-		printf("+=======================================================+\n\n");
+		printf("+-----------------------------------------------------------+\n");
+		printf("|                  LATE SELF-STUDY HOUR                     |\n");
+		printf("|               8 ROUNDS OF INTENSE BATTLE!                 |\n");
+		printf("|              EVERY STUDENT NEEDS TO FIGHT!                |\n");
+		printf("+-----------------------------------------------------------+\n");
 		color(7);
-		sslp(2);
+		sett(listA,listB,5);
+		printf("Press any key to continue...");
+		getch();
 		turn(8,listA,listB,1);
 		return;
 	}
@@ -670,7 +684,7 @@ void fight(int day, int cla){
 	printf("+-----------------------------------------------------------+\n");
 	color(7);
 	sett(listA, listB, 5);
-	checkProgress(3);
+	checkProgress(2);
 
 	for(int i=0;i<stud_list.size();i++){
 		if(stud_list[i]==NULL){continue;}
@@ -678,7 +692,6 @@ void fight(int day, int cla){
 		if(tmp->id==26){((stud_B13*)tmp)->on_class_start(classtable[day][cla]);}
 	}
 
-	// 属性匹配加成 - 使用新版 push_back
 	for (int i = 0; i < stud_list.size(); i++){
 		if (stud_list[i] == NULL) continue;
 		tmp = (stud * )(stud_list[i]);
@@ -710,7 +723,7 @@ void fight(int day, int cla){
 		if(!a_chosen){
 			printf("\nTeam A - Select 3 students for battle (W/S to move, Enter to select):\n");
 			a_chosen=1;
-		}else{printf("\nTeam A - Invalid choice, please select again:\n");}
+		}else{printf("\nTeam A - Invalid choice, please select again:                         \n");}
 		color(7);
 		
 		for (int i = 0; i < 5; i++){
@@ -845,7 +858,7 @@ void fight(int day, int cla){
 		if(!b_chosen){
 			printf("\nTeam B - Select 3 students for battle (W/S to move, Enter to select):\n");
 			b_chosen=1;
-		}else{printf("\nTeam B - Invalid choice, please select again:\n");}
+		}else{printf("\nTeam B - Invalid choice, please select again:                         \n");}
 		color(7);
 		
 		for (int i = 0; i < 5; i++){
@@ -1049,13 +1062,13 @@ void fight(int day, int cla){
 	turn(3,lA,lB,0);
 
 	// 检查残血/满血通关成就
-	bool anyLow=0,allFull=1;
+	bool allLow=1,allFull=1;
 
 	for(auto x:lA){
 		stud* s=(stud*)x;
 		if(isalive[s->id]&&s->red>=0){
 			double ratio=(double)s->red/s->red_up;
-			if(ratio<=0.2){anyLow=1;}
+			if(ratio>0.2){allLow=0;}
 			if(s->red<s->red_up){allFull=0;}
 		}
 	}
@@ -1063,20 +1076,18 @@ void fight(int day, int cla){
 		stud* s=(stud*)x;
 		if(isalive[s->id]&&s->red>=0){
 			double ratio=(double)s->red/s->red_up;
-			if(ratio<=0.2){anyLow=1;}
+			if(ratio>0.2){allLow=0;}
 			if(s->red<s->red_up){allFull=0;}
 		}
 	}
 
-	if(anyLow){checkProgress(7);}
+	if(allLow){checkProgress(7);}
 	if(allFull){checkProgress(8);}
 
-	for(int i = 0; i < stud_list.size(); i++){
-		if(stud_list[i] == NULL) continue;
-		tmp = (stud*)stud_list[i];
-		if(tmp->id == 28){
-			((stud_B15*)tmp)->on_class_end();
-		}
+	for(int i=0;i<stud_list.size();i++){
+		if(stud_list[i]==NULL) continue;
+		tmp=(stud*)stud_list[i];
+		if(tmp->id==28){((stud_B15*)tmp)->on_class_end();}
 	}
 
 	for(int i=0;i<stud_list.size();i++){
@@ -1085,6 +1096,7 @@ void fight(int day, int cla){
 		tmp->on_fight_end();
 	}
 }
+
 
 // ========== CVS_game 主游戏循环 ==========
 void CVS_game(){
@@ -1109,50 +1121,56 @@ void CVS_game(){
 		printf("Press any key to continue...");
 		getch();
 	}
-
-	while(Anum>0&&Bnum>0){
-		for(day=1;day<=5;day++){
-			for(int i=0;i<stud_list.size();i++){
-				if(stud_list[i]==NULL||!isalive[((stud*)stud_list[i])->id]){continue;}
-				tmp=(stud*)stud_list[i];
-				if(tmp->id==26){
-					((stud_B13*)tmp)->resetDaily();
-					((stud_B13*)tmp)->on_day_start();
-				}
+	if(!settings.Ct_Need_Chose){
+		for(auto x:stud_list){
+			if(x!=NULL){
+				for(int i=0;i<3;i++)
+				((stud*)x)->HavCt[i]=1;
 			}
+		}
+	}
 
-			for(clas=1;clas<=8;clas++){
-				if(Anum<=0||Bnum<=0){continue;}
-				if(clas==5||clas==8){
-					for(int i=0;i<stud_list.size();i++){
-						if(stud_list[i]==NULL||!isalive[((stud*)stud_list[i])->id]){continue;}
-						tmp=(stud*)(stud_list[i]);
-						(*tmp).cwhite(20);
-					}
-					color(10);
-					printf("\n[MEAL] Meal time! +20 stamina restored!\n");
-					color(7);
-				}
+	for(day=1;day<=5;day++){
+		for(int i=0;i<stud_list.size();i++){
+			if(stud_list[i]==NULL||!isalive[((stud*)stud_list[i])->id]){continue;}
+			tmp=(stud*)stud_list[i];
+			if(tmp->id==26){
+				((stud_B13*)tmp)->resetDaily();
+				((stud_B13*)tmp)->on_day_start();
+			}
+		}
+
+		for(clas=1;clas<=8;clas++){
+			if(Anum<=0||Bnum<=0){continue;}
+			if(clas==5||clas==8){
 				for(int i=0;i<stud_list.size();i++){
 					if(stud_list[i]==NULL||!isalive[((stud*)stud_list[i])->id]){continue;}
 					tmp=(stud*)(stud_list[i]);
-					(*tmp).cblue(5);
+					(*tmp).cwhite(20);
 				}
-				fight(day,clas);
+				color(10);
+				printf("\n[MEAL] Meal time! +20 stamina restored!\n");
+				color(7);
 			}
 			for(int i=0;i<stud_list.size();i++){
 				if(stud_list[i]==NULL||!isalive[((stud*)stud_list[i])->id]){continue;}
 				tmp=(stud*)(stud_list[i]);
-				(*tmp).white=(*tmp).white_up;
-				(*tmp).cblue(20);
-
-				if((*tmp).red<0.2*(*tmp).red_up){(*tmp).red=0.2*(*tmp).red_up;}
-				else{(*tmp).cred(20);}
+				(*tmp).cblue(5);
 			}
-			color(10);
-			printf("\n[WEEKEND] Weekend! Full stamina restored!\n");
-			color(7);
+			fight(day,clas);
+			if(clas==2||clas==5||clas==7)Lets_Choose_Ct(listA,listB,1);
+			else if(clas==8)Lets_Choose_Ct(listA,listB,2);
 		}
+		for(int i=0;i<stud_list.size();i++){
+			if(stud_list[i]==NULL||!isalive[((stud*)stud_list[i])->id]){continue;}
+			tmp=(stud*)(stud_list[i]);
+			(*tmp).white=(*tmp).white_up;
+			(*tmp).cblue(20);
+
+			if((*tmp).red<0.2*(*tmp).red_up){(*tmp).red=0.2*(*tmp).red_up;}
+			else{(*tmp).cred(20);}
+		}
+		color(7);
 	}
 
 	if(settings.auto_insane&&(Anum<=0||Bnum<=0)){unlockChallenge(1);}
@@ -1160,15 +1178,9 @@ void CVS_game(){
 	system("cls");
 	color(14);
 	printf("\n+========================================================+\n");
-	if(Anum<=0&&Bnum<=0){
-		printf("|                        DRAW GAME!                      |\n");
-	}
-	else if(Anum<=0){
-		printf("|                     TEAM B VICTORY!                    |\n");
-	}
-	else if(Bnum<=0){
-		printf("|                     TEAM A VICTORY!                    |\n");
-	}
+	if((Anum<=0&&Bnum<=0)||(Anum>0&&Bnum>0)){printf("|                        DRAW GAME!                      |\n");}
+	else if(Anum<=0){printf("|                     TEAM B VICTORY!                    |\n");}
+	else if(Bnum<=0){printf("|                     TEAM A VICTORY!                    |\n");}
 	printf("+========================================================+\n\nPress any key to continue...");
 	color(7);
 	getch();

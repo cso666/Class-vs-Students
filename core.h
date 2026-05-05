@@ -18,6 +18,7 @@
     #include<windows.h>
 #endif
 #include<conio.h>
+#include<string>
 #include<map>
 #include<time.h>
 #include<stdarg.h>
@@ -33,6 +34,14 @@ vector<void*>listA,listB;
 int Anum=5,Bnum=5;
 int day,clas;
 bool isalive[35];
+
+string normal_ct[100]={"Red Up","Blue Up","White Up","Red_Mul Up","Blue_Mul Up","White_Mul Up","Att Up","Powerer hit","Harmful hit","Comfort One","Destory One"};
+string rare_ct[100]={"Double Red Mul","Double Blue Mul","Double White Mul","Lets Make Hero"};
+string with_ct[100]={"Defections!!","Maths STAR!!"};//un deal
+string evolute_ct[100]={"A03->A24","A04->A04-L"};//un deal
+                                      // A04-Lacrymira
+									  // I love Arcaea
+int nc_cnt=11,rc_cnt=4,wc_cnt=2,ec_cnt=2;
 
 // ========== 控制台函数 ==========
 void gotoxy(int x,int y){
@@ -141,11 +150,11 @@ stud_B15 t28;
 
 // ========== 课表 ==========
 int classtable[5][8]={
-	{6,2,8,3,9,1,0},
-	{2,13,4,1,7,8,5},
-	{1,1,2,3,11,8,0},
-	{1,8,12,7,10,4,2},
-	{3,4,2,2,6,5,0}
+    {7,3,9,4,10,2,1,14},   // 周一物晚
+    {3,14,5,2,8,9,6,15},   // 周二数晚
+    {2,2,3,4,12,9,1,16},   // 周三英晚
+    {2,9,13,8,11,5,3,17},  // 周四语晚
+    {4,5,3,3,7,6,1,0}
 };
 
 // ========== 前向声明 ==========
@@ -734,6 +743,155 @@ void applySubjectStart(int subject){
 			}
 		}
 	}
+	if(subject>=14&&subject<=17){// 晚，什么科目自己看输出
+		if(debug_on){logPrint(7,"[Late Self-Study] Subject ID: %d\n",subject);}
+		
+		if(subject==14){
+			if(rand()%100<70){
+				if(debug_on){logPrint(12,"[Late Self-Study] Physics exam! -10 STA, -7 SAN\n");}
+				for(auto p:stud_list){
+					if(p==NULL){continue;}
+					stud* s=(stud*)p;
+					if(!isalive[s->id]){continue;}
+					if(s->id==17){continue;}
+					s->cwhite(-10);
+					s->cblue(-7);
+				}
+			}else{
+				if(debug_on){logPrint(10,"[Late Self-Study] No physics exam! +10 HP/SAN/STA\n");}
+				for(auto p:stud_list){
+					if(p==NULL){continue;}
+					stud* s=(stud*)p;
+					if(!isalive[s->id]){continue;}
+					if(s->id==17){continue;}
+					s->cred(10);
+					s->cblue(10);
+					s->cwhite(10);
+				}
+			}
+		}
+		else if(subject==15){
+			if(rand()%100<95){
+				if(debug_on){logPrint(12,"[Late Self-Study] Math exam! -15 STA, -15 SAN (B3/B4 exempt)\n");}
+				for(auto p:stud_list){
+					if(p==NULL){continue;}
+					stud* s=(stud*)p;
+					if(!isalive[s->id]){continue;}
+					if(s->id==16||s->id==17){continue;}
+					s->cwhite(-15);
+					s->cblue(-15);
+				}
+			}else{
+				if(debug_on){logPrint(10,"[Late Self-Study] No math exam! +10 HP/SAN/STA\n");}
+				for(auto p:stud_list){
+					if(p==NULL){continue;}
+					stud* s=(stud*)p;
+					if(!isalive[s->id]){continue;}
+					if(s->id==17){continue;}
+					s->cred(10);
+					s->cblue(10);
+					s->cwhite(10);
+				}
+			}
+		}
+		else if(subject==16){
+			int r1=rand()%100;
+			if(r1<90){
+				if(debug_on){logPrint(12,"[Late Self-Study] Class combining! B class -5 STA, -5 SAN\n");}
+				for(auto p:stud_list){
+					if(p==NULL){continue;}
+					stud* s=(stud*)p;
+					if(!isalive[s->id]){continue;}
+					if(s->id>=14&&s->id<=28){
+						if(s->id==17){continue;}
+						s->cwhite(-5);
+						s->cblue(-5);
+					}
+				}
+				int r2=rand()%100;
+				if(r2<25){
+					if(debug_on){logPrint(10,"[Late Self-Study] English films! +10 HP/SAN/STA\n");}
+					for(auto p:stud_list){
+						if(p==NULL){continue;}
+						stud* s=(stud*)p;
+						if(!isalive[s->id]){continue;}
+						if(s->id==17){continue;}
+						s->cred(10);
+						s->cblue(10);
+						s->cwhite(10);
+					}
+				}else{
+					if(debug_on){logPrint(12,"[Late Self-Study] English exam penalty! -10 HP/SAN/STA\n");}
+					for(auto p:stud_list){
+						if(p==NULL){continue;}
+						stud* s=(stud*)p;
+						if(!isalive[s->id]){continue;}
+						if(s->id==17){continue;}
+						s->cred(-10);
+						s->cblue(-10);
+						s->cwhite(-10);
+					}
+				}
+			}else{
+				if(debug_on){logPrint(10,"[Late Self-Study] Watch films together! +25 HP/SAN/STA\n");}
+				for(auto p:stud_list){
+					if(p==NULL){continue;}
+					stud* s=(stud*)p;
+					if(!isalive[s->id]){continue;}
+					if(s->id==17){continue;}
+					s->cred(25);
+					s->cblue(25);
+					s->cwhite(25);
+				}
+			}
+		}
+		else if(subject==17){
+			int r=rand()%100;
+			if(r<20){
+				if(debug_on){logPrint(12,"[Late Self-Study] Chinese exam - Modern Reading II! -5 SAN, -5 STA\n");}
+				for(auto p:stud_list){
+					if(p==NULL){continue;}
+					stud* s=(stud*)p;
+					if(!isalive[s->id]){continue;}
+					if(s->id==17){continue;}
+					s->cblue(-5);
+					s->cwhite(-5);
+				}
+			}else if(r<40){
+				if(debug_on){logPrint(12,"[Late Self-Study] Chinese exam - Basics! -5 STA\n");}
+				for(auto p:stud_list){
+					if(p==NULL){continue;}
+					stud* s=(stud*)p;
+					if(!isalive[s->id]){continue;}
+					if(s->id==17){continue;}
+					s->cwhite(-5);
+				}
+			}else if(r<80){
+				if(debug_on){logPrint(10,"[Late Self-Study] Chinese - Documentary! +5 HP/SAN/STA\n");}
+				for(auto p:stud_list){
+					if(p==NULL){continue;}
+					stud* s=(stud*)p;
+					if(!isalive[s->id]){continue;}
+					if(s->id==17){continue;}
+					s->cred(5);
+					s->cblue(5);
+					s->cwhite(5);
+				}
+			}else{
+				if(debug_on){logPrint(12,"[Late Self-Study]\
+ Chinese exam - Composition Practice! -10 SAN, -10 STA, -5 HP\n");}
+				for(auto p:stud_list){
+					if(p==NULL){continue;}
+					stud* s=(stud*)p;
+					if(!isalive[s->id]){continue;}
+					if(s->id==17){continue;}
+					s->cred(-5);
+					s->cblue(-10);
+					s->cwhite(-10);
+				}
+			}
+		}
+	}
 }
 
 // 学科结束效果
@@ -1005,7 +1163,7 @@ void team_chs(){
         if(x==NULL){continue;}
         stud* s=(stud*)x;
         if(s->id==4){
-            if(rand()%1000==0){  // 0.1%概率
+            if(rand()%1000==115+80+75){  // 0.1%概率
 				nesssp=1;
                 s->red_up=s->red=0x3f3f3f3f;
                 s->blue_up=s->blue=0x3f3f3f3f;
@@ -1077,6 +1235,15 @@ void sett(vector<void*>lA,vector<void*>lB,const int k){
 			}
 			color(7);
 			printf(" | ");
+		}else if(y.affected){
+			color(118);
+			printf("  ");
+			for(int i=1;i<=3;i++){
+				char c=33+rand()%94;
+				printf("%c",c);
+			}
+			color(7);
+			printf(" | ");
 		}else{
 			color(6);
 			printf("  %02d  ",y.get_att());
@@ -1089,7 +1256,7 @@ void sett(vector<void*>lA,vector<void*>lB,const int k){
 		if(x==NULL){continue;}
 		stud y=(*(stud*)x);
 		bool is_dead=!isalive[y.id];
-		bool is_white_dead=(y.status==-1||y.white<=0);
+		bool is_white_dead=(y.status==-1||y.white<0);
 		
 		if(is_dead){
 			color(8);
@@ -1187,6 +1354,15 @@ void sett(vector<void*>lA,vector<void*>lB,const int k){
 			}
 			color(7);
 			printf(" | ");
+		}else if(y.affected){
+			color(118);
+			printf("  ");
+			for(int i=1;i<=3;i++){
+				char c=33+rand()%94;
+				printf("%c",c);
+			}
+			color(7);
+			printf(" | ");
 		}else{
 			color(6);
 			printf("  %02d  ",y.get_att());
@@ -1199,7 +1375,7 @@ void sett(vector<void*>lA,vector<void*>lB,const int k){
 		if(x==NULL){continue;}
 		stud y=(*(stud*)x);
 		bool is_dead=!isalive[y.id];
-		bool is_white_dead=(y.status==-1||y.white<=0);
+		bool is_white_dead=(y.status==-1||y.white<0);
 		
 		if(is_dead){
 			color(8);

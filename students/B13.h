@@ -32,7 +32,7 @@ class stud_B13:public stud{
 		void on_class_start(int subject_id){
 			bool is_music_subject=(subject_id==10||subject_id==13||subject_id==12||subject_id==7||subject_id==11);
 			
-			if(is_music_subject){
+			if(HavCt[2])if(is_music_subject){
 				if(rand()%100<80){
 					is_away=1;
 					if(debug_on){logPrint(10,"[B13] %s goes to listen to music! Away from battle.\n",name.c_str());}
@@ -49,7 +49,7 @@ class stud_B13:public stud{
 		
 		void on_turn_start(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team) override {
 			stud::on_turn_start(target,teach,team,beside_team);
-			if(takeItEasy_active){
+			if(HavCt[1])if(takeItEasy_active){
 				cblue(-10);
 				if(debug_on){logPrint(12,"[B13] TakeItEasy... active! -10 sanity. Current: %d\n",blue);}
 			}

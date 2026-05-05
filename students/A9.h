@@ -8,7 +8,7 @@ class stud_A9:public stud{
 			att+=3;
 			py.push_back(15);
 			ct1.push_back("MrMonitor");//班长大人
-			ct1.push_back("Peacemaker");//劝架使者
+			//ct1.push_back("Peacemaker");//劝架使者
 			ct1.push_back("AbundantSupport");//多助之至
 			ct2.push_back("FindOut");//太守寻源
 			id=9;
@@ -38,7 +38,7 @@ class stud_A9:public stud{
 			if(tim%26==1&&!is_crazy&&status!=-1){
 				for(auto x:team){(*x).firstTurnA9=1;}
 			}
-			for(auto x:team){(*x).att_mul.push_back({1.35,1});}
+			if(HavCt[1])for(auto x:team){(*x).att_mul.push_back({1.35,1});}
 		}
 		
 		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){

@@ -13,7 +13,7 @@ class stud_B3:public stud{
 			ct1.pb("Tutor(TA)");
 			ct1.pb("Calm&Composed");
 			ct1.pb("MathDUO");
-			ct2.push_back("???");
+			ct2.pb("HalfAngle");// 夹半角
 			id=16;
 			name="B03";
 		}
@@ -24,7 +24,7 @@ class stud_B3:public stud{
 		
 		void on_turn_end(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team) override {
 			stud::on_turn_end(target,teach,team,beside_team);
-			cred(5);
+			if(HavCt[2])cred(5);
 		}
 		
 		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){

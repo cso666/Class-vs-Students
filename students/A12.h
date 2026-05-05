@@ -14,8 +14,8 @@ class stud_A12: public stud{
 			att+=0;
 			py.push_back(15);
 			ct1.pb("EatWell");//我吃好了
-			ct1.pb("YouXianglinSao");//并非蠢货
 			ct1.pb("YogHURT");//酸奶
+			ct1.pb("YouXianglinSao");//并非蠢货
 			ct2.pb("EnchantedGoldenApple");//附魔金苹果
 			id=12;
 			name="A12";
@@ -26,7 +26,7 @@ class stud_A12: public stud{
 		
 		int before_att(stud*target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::before_att(target,teach,team,beside_team);
-			if(target->id==8){
+			if(HavCt[2])if(target->id==8){
 				int final_att=get_att()*(*target).get_be_att_mul();
 				for(auto x:beside_team){
 					if(x->id!=8){x->cred((rand()%40)*0.01*final_att);}
@@ -48,7 +48,7 @@ class stud_A12: public stud{
 			if(tim%26!=0){return;}
 			int HTclas=0;
 			for(int i=0;i<7;i++){HTclas+=classtablee[date][i]==2;}
-			cred(HTclas*5);// 我吃好了
+			if(HavCt[1])cred(HTclas*5);// 我吃好了
 			
 			if(ega_turnsLeft>0){
 				cred(10);

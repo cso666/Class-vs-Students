@@ -1,62 +1,154 @@
 # Class vs. Students 🎮📚
 
-A turn-based tactical battle game where students fight based on their academic schedules and subject specialties.
+[![Version](https://img.shields.io/badge/version-0.3-blue.svg)](https://github.com/cso666/Class-vs-Students)
+[![Platform](https://img.shields.io/badge/platform-Windows-brightgreen.svg)]()
 
-## ✨ Features
-*   **Schedule-Driven Combat**: Battles unfold across a simulated 5-day school week with 8 classes per day. Subject of the current class influences combat.
-*   **Diverse Character System**: 28 unique students, each with distinct academic attributes (e.g., Chinese Rep, Math Rep) and special traits.
-*   **Tri-Resource Management**: Strategize using Health (Red), Sanity (Blue), and Stamina (White).
-*   **Team-Based Gameplay**: Command Team A and Team B in tactical 3v3 skirmishes each period.
+> 一个基于学科课表的回合制策略游戏。控制A/B两队（不是A/B班！！）学生，在5天×8节课的学校周期中进行 3v3 战斗。每个学生拥有独特的技能和三资源系统，学科效果会影响战局。
 
-## 🚀 Quick Start
-### Prerequisites
-*   Windows OS
-*   MinGW GCC Compiler (included in project scripts)
-*   Or any C++11 compatible environment
+## ✨ 游戏特色
 
-### Build & Run
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/cso666/Class-vs-Students.git
-    cd Class-vs-Students
-    ```
+- **课表驱动战斗**：5天×8节课，每节课的学科都会影响战斗
+- **28个独特学生**：A班13人 + B班15人，每人都有独特的被动和主动技能
+- **三资源系统**：血量(红)、理智(蓝)、体力(白)，策略性管理
+- **团队对抗**：每节课从5人队伍中选3人进行3回合战斗
+- **学科效果**：13门学科各有不同的加成和惩罚
+- **不听讲系统**：不听讲的学生会被老师惩罚，（1%）在历史课上可能会直接输掉！
+- **成就系统**：8个进度成就 + 7个挑战成就
+- **图鉴系统**：查看所有学生的技能和属性
 
-2.  **Compile the project**:
-    *   Run the `compile.bat` script in the project root.
-    *   Or compile manually:
-      ```bash
-      g++ -std=c++11 main.cpp app.res -o main.exe
-      ```
+## 🎯 学生一览
 
-3.  **Launch the game**:
-    ```bash
-    main.exe
-    ```
+| A班 | 技能 | B班 | 技能 |
+|-----|------|-----|------|
+| A01 | 柠檬强酸 | B01 | 换座 |
+| A02 | 我的浮木似了 | B02 | 犬吠 |
+| A03 | 你母亲 | B03 | ??? |
+| A04 | 偷零食 | B04 | 扒皮 |
+| A05 | 曼巴 out | B05 | 回家 |
+| A06 | 预警 | B06 | 老干 |
+| A07 | 人生啊 | B07 | 被扫倒 |
+| A08 | 降维打击 | B08 | 打架吗 |
+| A09 | 太守寻源 | B09 | 提琴手 |
+| A10 | 大射击 | B10 | 无妄之灾 |
+| A12 | 附魔金苹果 | B11 | 嘉宾 |
+| A13 | 猪年称重 | B12 | 摇雪碧 |
+| | | B13 | 知识就是力量 |
+| | | B14 | 自愈 |
+| | | B15 | 雨天 |
 
-## 🛠️ Development
-### Project Structure
+## 🚀 快速开始
+
+### 环境要求
+- Windows 操作系统
+- MinGW GCC 编译器（或任何 C++11 兼容环境）
+
+### 编译与运行
+
+1. **克隆仓库**
+```bash
+git clone https://github.com/cso666/Class-vs-Students.git
+cd Class-vs-Students
+```
+
+2. **编译**
+```bash
+compile.bat
+```
+
+3. **运行**
+```bash
+start.bat
+# 或直接运行 main.exe
+```
+
+### 手动编译
+```bash
+g++ -std=c++11 main.cpp -o main.exe
+```
+
+## 🎮 游戏指南
+
+### 基本流程
+1. 从16名随机学生中为两队各选5人
+2. 每节课从5人中选择3人出战
+3. 3回合战斗，两队交替攻击
+4. 每周末恢复体力和部分血量
+5. 5天后判定胜负
+
+### 战斗操作
+- **W/S**：移动光标
+- **Enter**：确认选择
+- 可选择普通攻击或使用技能
+
+### 资源说明
+| 资源 | 颜色 | 说明 |
+|------|------|------|
+| 血量(HP) | 🔴 红色 | 归零即死亡 |
+| 理智(SAN) | 🔵 蓝色 | 归零进入疯人状态（1.5倍攻击） |
+| 体力(STA) | ⚪ 白色 | 归零进入力竭状态（无法行动）|
+
+### 学科效果
+| 学科 | 效果 |
+|------|------|
+| 语文 | 随机卡牌效果 |
+| 数学 | 伤害加成/消耗变化 |
+| 英语A/B | 扣减属性 |
+| 历史 | 不听讲惩罚 |
+| 政治 | 全局伤害浮动 |
+| 体育 | 扣体力加理智 |
+| 物理 | 标记效果 |
+| 信息 | OIer彩蛋 |
+| 音乐 | 概率掉血 |
+| 生物 | 回体力 |
+| 地理 | 区域加成 |
+
+## 🔧 开发相关
+
+### 项目结构
+```
 Class-vs-Students/
+├── main.cpp          # 程序入口
+├── core.h            # 核心游戏逻辑
+├── fight.h           # 战斗系统
+├── gameui.h          # UI/成就/设置/图鉴
+├── students/
+│   ├── A0.h          # 学生基类
+│   ├── A1.h~A13.h    # A班学生
+│   └── B1.h~B15.h    # B班学生
+├── compile.bat       # 编译脚本
+├── start.bat         # 启动脚本
+├── README.md         # 本文件
+└── icon.ico          # 程序图标
+```
 
-├── main.cpp # Main game loop & control logic
+### 调试模式
+在设置中开启 Debug Log，会生成 `combat.log` 文件记录战斗详情。
 
-├── student.h # Header aggregating all character classes
+## 🎁 彩蛋
 
-├── teacher.h # Weekly class schedule data
+> Lacrymira即是强大本身。祂的能力只有一人能够企及。
+- **神A4**：在图鉴中按 Enter 查看 A04，有 0.1% 概率触发超能力者模式
+- **神谕**：与神A4同队的学生可能获得"深不可测的伟力"加成
 
-├── students/ # Individual character headers (A0.h, A1.h, ...)
+- **OIer游戏**：信息课有 0.1% 概率触发 OIer 计数事件
 
-├── compile.bat # Windows one-click build script
+## 👥 开发团队
 
-├── headers.h # Standard library includes
+- [JSGF_ArcPhi](https://www.luogu.com.cn/user/1300229) - UI & 成就 & 图鉴 & 维护
+- [delHYfish](https://www.luogu.com.cn/user/1382890) - 游戏框架 & 核心机制 & 系统 & 维护 & ~~很多Tips~~
+- [cso666_Luogu](https://www.luogu.com.cn/user/1513597) - 战斗系统 & 核心机制 & 维护
+- DeepSeek - 翻译 & 解释代码 & 排查bug & 复制粘贴
+- ~~LX(?) - 英语老师~~
 
-├── app.rc & icon.ico # Application resources & icon
+## 📄 许可证
 
-└── README.md # This file
-### Core Developers
-This project was collaboratively created by:
-*   [JSGF](https://www.luogu.com.cn/user/1513597)
-*   [delHYfish](https://www.luogu.com.cn/user/1382890)
-*   [cso666](https://www.luogu.com.cn/user/1300229) (Repository Maintainer)
+仅供娱乐，无特定许可证。
 
-## 📄 License
-No licence.Just for fun!
+## 🙏 致谢
+
+感谢所有测试和提供反馈的玩家！  
+~~感谢 Arcaea！~~
+
+---
+
+*Class vs. Students — 当上课变成战斗，谁才是真正的学霸？*

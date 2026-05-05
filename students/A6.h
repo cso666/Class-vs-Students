@@ -12,13 +12,14 @@ class stud_A6 : public stud {
             py.push_back(15);
             ct1.push_back("PrisonGuard"); // 狱警
             ct1.push_back("LoseJ");       // YJ
+            ct2.push_back("EarlyWarning");
             id = 6;
             name = "A06";
         }
         
         int before_att(stud* target, int teach, vector<stud*> team, vector<stud*> beside_team) override {
             int return_num=stud::before_att(target, teach, team, beside_team);
-            for(auto prop : target->py) {
+            if(HavCt[1])for(auto prop : target->py) {
                 if(prop == 15) {
                     att_mul.push_back({1.1,1});
                     break;
@@ -33,7 +34,7 @@ class stud_A6 : public stud {
         
         int on_before_be_atted(stud* target, int teach, vector<stud*> team, vector<stud*> beside_team) override {
             int return_num=stud::on_before_be_atted(target, teach, team, beside_team);
-            for(auto prop : target->py) {
+            if(HavCt[1])for(auto prop : target->py) {
                 if(prop == 15) {
                     be_att_mul.push_back({0.78,1});
                     break;

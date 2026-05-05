@@ -18,13 +18,13 @@ class stud_B5:public stud{
 		
 		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::before_att(target,teach,team,beside_team);
-			if(B5emo&&rand()%100<40){return 1;}
+			if(HavCt[2])if(B5emo&&rand()%100<40){return 1;}
 			return return_num;
 		}
 		
 		void after_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::after_att(target,teach,team,beside_team);	
-			if(B5emo&&rand()%5==1){
+			if(HavCt[2])if(B5emo&&rand()%5==1){
 				int qx=get_att()*(*target).get_be_att_mul();
 				target -> cred(qx);
 			}		
@@ -41,16 +41,16 @@ class stud_B5:public stud{
 		
 		void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_start(target,teach,team,beside_team);
-			if(rand()%5<2){
+			if(HavCt[1])if(rand()%5<2){
 				cred(rand()%21-10);
 				cblue(rand()%21-10);
 				cwhite(rand()%21-10);
 			}
-			if(blue_up*0.6>blue&&!B5emo){
+			if(HavCt[2])if(blue_up*0.6>blue&&!B5emo){
 				B5emo=1;
 				be_att_mul.push_back({0.6,0x7f7f7f7f});
 			}
-			if(blue_up*0.6<=blue&&B5emo){
+			if(HavCt[2])if(blue_up*0.6<=blue&&B5emo){
 				B5emo=0;
 				// 移除0.6倍率
 				for(int i=0;i<be_att_mul.size();i++){

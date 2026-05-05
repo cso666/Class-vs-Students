@@ -11,7 +11,7 @@ class stud_A2:public stud{
 			ct1.push_back("Unconnect");//断网
 			ct1.push_back("Subjective");//主观的人
 			ct2.push_back("ParentsGone");//我的浮木似了
-			ct1.push_back("Headshot");//
+			//ct1.push_back("Headshot");
 
 			id=2;
 			name="A02";
@@ -23,11 +23,11 @@ class stud_A2:public stud{
 				can_act=false;
 				cant_act++;
 			}
-			if((*target).name=="B10"){
+			if(HavCt[1])if((*target).name=="B10"){
 				tmp_att_plus.push_back({5,1});
 				cblue(-24);
 			}
-			if((rand()*rand())%3==1){
+			if(HavCt[2])if((rand()*rand())%3==1){
 				tmp_att_plus.push_back({5,1});
 			}
 			return return_num;

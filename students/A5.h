@@ -33,11 +33,13 @@ class stud_A5:public stud{
 		
 		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int return_num=stud::before_att(target,teach,team,beside_team);
-			if((rand()*rand())%10==9){
+			if(HavCt[1])if((rand()*rand())%10==9){
 				tmp_att_plus.push_back({5,1});
-				(*target).can_act=false;
-				int ctttt=tim%26%3; 
-				(*target).cant_act+=3-ctttt;
+				if(HavCt[2]){
+					(*target).can_act=false;
+					int ctttt=tim%26%3; 
+					(*target).cant_act+=3-ctttt;	
+				}
 			}
 			return 2;
 		}

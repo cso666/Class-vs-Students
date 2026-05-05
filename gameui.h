@@ -4,11 +4,8 @@
 
 /*
  * gameui.h is including:
- *   ACHIVEVMENT
- *   SETTINGS
- *   TIPS
- *   GUIDE
- *   GAME
+ *   achievementMenu settingsMenu
+ *   guide showTip startASCIIart
  */
 
 // ===ACHIEVEMENT===
@@ -27,8 +24,8 @@ struct c_ahv{
 };// 挑战成就
 static p_ahv pahv[]={
 	{1,"First Launch","Open the game once.",0},
-	{2,"First Blood","Kill an enemy.",0},
-	{3,"First Battle","Start a battle.",0},
+	{2,"First Battle","Start a battle.",0},
+	{3,"First Blood","Kill an enemy.",0},
 	{4,"Explorer","Open Achievement page.",0},
 	{5,"Seeker","Open Guidance page.",0},
 	{6,"Settings Master","Open Settings page.",0},
@@ -80,7 +77,7 @@ void loadAch(){
 	}
 }// 加载成就
 
-void unlockProgress(int id){
+void checkProgress(int id){
 	if(id<1||id>pcnt){return;}
 	if(!pahv[id-1].completed){
 		pahv[id-1].completed=1;
@@ -98,22 +95,10 @@ void unlockChallenge(int id){
 	}
 }// 解锁挑战成就
 
-void checkProgress(int type){
-	switch(type){
-		case 1:unlockProgress(1);break;
-		case 2:unlockProgress(2);break;
-		case 3:unlockProgress(3);break;
-		case 4:unlockProgress(4);break;
-		case 5:unlockProgress(5);break;
-		case 6:unlockProgress(6);break;
-		case 7:unlockProgress(7);break;
-		case 8:unlockProgress(8);break;
-	}
-}// 检查进度成就
-
 // 显示成就页面
 void achievementMenu(){
 	system("cls");
+    checkProgress(4);
     color(11);
     printf(R"---(+-------------------------------------------------------------------------+
 |              Progress              |             Challenges             |
@@ -121,8 +106,8 @@ void achievementMenu(){
     color(7);
     printf(R"---(
 |    1. First Launch                 |    1. Total Insanity               |
-|    2. First Blood                  |    2. Heavenly Strike              |
-|    3. First Battle                 |    3. ESP User                     |
+|    2. First Battle                 |    2. Heavenly Strike              |
+|    3. First Blood                  |    3. ESP User                     |
 |    4. Explorer                     |    4. Scape... Escape?             |
 |    5. Seeker                       |    5. Ineffective Warning?         |
 |    6. Settings Master              |    6. Total Destruction            |
@@ -322,10 +307,11 @@ struct GameSettings{
     bool chinese_tips;// 中文tips
     bool full_tips;// 完整tips
     bool hide_tips;// 隐藏tips
+    bool Ct_Need_Chose;
 };
 
 // 全局设置实例
-static GameSettings settings={0,0,0,0,0};
+static GameSettings settings={0,0,0,0,0,0};
 
 // 保存设置到文件
 void saveSettings(){
@@ -361,6 +347,7 @@ void settingsMenu(){
     printf("|    3. Chinese Tips                       |\n");
     printf("|    4. Full Tips                          |\n");
     printf("|    5. Hide Tips                          |\n");
+    printf("|    6. Ct Need be chose (Unready)         |\n");
     color(11);
     printf("+------------------------------------------+\n");
     color(4);
@@ -397,6 +384,9 @@ void settingsMenu(){
     gotoxy(37,7);
     if(settings.hide_tips){color(10);printf("[ON] ");}
     else{color(8);printf("[OFF]");}
+    gotoxy(37,8);
+    if(settings.Ct_Need_Chose){color(10);printf("[ON] ");}
+    else{color(8);printf("[OFF]");}
     color(7);
 
     while(1){
@@ -410,7 +400,7 @@ void settingsMenu(){
             gotoxy(0,nowy);
             printf("| ->");
         }
-        else if((key=='s'||key=='S')&&nowy<7){
+        else if((key=='s'||key=='S')&&nowy<8){
             color(7);
             gotoxy(0,nowy);
             printf("|   ");
@@ -483,6 +473,17 @@ void settingsMenu(){
                     color(8);
                     printf("[OFF]");
                 }
+            }else if(nowy==8){
+                settings.Ct_Need_Chose=!settings.Ct_Need_Chose;
+                saveSettings();
+                gotoxy(37,nowy);
+                if(settings.Ct_Need_Chose){
+                    color(10);
+                    printf("[ON] ");
+                }else{
+                    color(8);
+                    printf("[OFF]");
+                }
             }
         }
         else if(key==27){break;}
@@ -542,6 +543,83 @@ Answer: No strengths. No speech.)---",15},
      R"---(Is this also a part of the ingredients?)---",
      R"---(这也是配料的一部分吗？)---",
      R"---(Is this also a part of the ingredients?)---",15},
+
+    {R"---(日本人就可以10分钟AC四道黑题了吗？)---",
+     R"---(Can Japanese people solve 4 black-rated problems in 10 minutes?)---",
+     R"---(“牢品NB，四道黑题！！！”
+“四道黑题，把我当日本人整”
+“是的，要是我心情不好就是14道了”)---",
+     R"---("Laopin GOAT, four black problems!!!"
+"Four black problems, treating me like a Japanese"
+"Yeah, if I'm in a bad mood, it would be 14 problems")---",15},
+
+    {R"---(REWA可以出现在任何地方！)---",
+     R"---(REWA can appear anywhere!)---",
+     R"---(“我希望紫色和红色出现在我的洛谷名上，而不是测试点信息上”
+“你说的对，但是我回复你的图形码还是REWA”)---",
+     R"---("I want purple and red on my Luogu username, not on the test result info"
+"You're right, but the captcha I replied to you is still REWA")---",15},
+
+    {R"---(oier的命是真的苦\o/\o/\o/)---",
+     R"---(OIer's life is truly painful\o/\o/\o/)---",
+     R"---(oier的命是真的苦 \o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/)---",
+     R"---(OIer's life is truly painful \o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/\o/)---",15},
+
+    {R"---(> @JSGF 在打开 B2053 的0秒后打开了题解，快来踩爆 ta)---",
+     R"---(> @JSGF opened the solution 0 seconds after opening B2053, come and stomp on them)---",
+     R"---(> @JSGF 在打开 B2053 的0秒后打开了题解，快来踩爆 ta)---",
+     R"---(> @JSGF opened the solution 0 seconds after opening B2053, come and stomp on them)---",15},
+
+    {R"---(不要老是比较利弊，因为……)---",
+     R"---(Don't always compare pros and cons, because...)---",
+     R"---(不要老是比较利弊。比利时，是一个欧洲国家；利弊相比时，哔哩哔哩；弊少于利时，
+多利是一只克隆羊；利少于弊时，多弊is free；弊利词下，一片神鸦社鼓。但也不能不考虑利弊：
+当只考虑一件事的弊，可利呢，是原神角色，当只考虑一件事的利；可弊呢，已经坠机了。)---",
+     R"---(Comparing pros and cons?
+I can't even translate this because it's way toooooooo hilarious.
+I recommend you chcp 65001 and turn on Chinese Tips.)---",15},
+
+    {R"---(骗子酒馆的反义词是诚信考场。)---",
+     R"---(The antonym of Liar's Bar is the Integrity Exam Hall.)---",
+     R"---(骗子酒馆的反义词是诚信考场。)---",
+     R"---(The antonym of Liar's Bar is the Integrity Exam Hall.)---",15},
+
+    {R"---(现代化学是没有头的！)---",
+     R"---(Modern chemistry has no head!)---",
+     R"---(我们知道，拉瓦锡是现代化学之父，而由于生物具有遗传性，所以现代化学是没有头的。)---",
+     R"---(We know Lavoisier is the father of modern chemistry. And because of heredity, you can always keep going aHEAD in modern chemistry.)---",15},
+
+    {R"---(你不仅可以在数学课上看见手拉手，语文课上也可以。)---",
+     R"---(You can see hand-holding not only in math class, but also in Chinese class.)---",
+     R"---(你不仅可以在数学课上看见手拉手，语文课上也可以。)---",
+     R"---(You can see hand-holding not only in math class, but also in Chinese class.)---",15},
+
+    {R"---(跳了，或者跳了。)---",
+     R"---(Pass the question, or pass away.)---",
+     R"---(考数学时，第十题不会可以先跳了，但第十一题不会就可以跳了。（玩笑需要，请勿模仿）)---",
+     R"---(In the math exam, if you can't solve Q10, just pass it. But if you can't solve Q11, you might want to pass away. (Just a joke, don't try it))---",15},
+
+    {R"---(梭哈是一种智慧。)---",
+     R"---(All-in is a form of wisdom.)---",
+     R"---("炒股的人有条名言——"
+"梭哈是一种智慧。")---",
+     R"---("Stock traders have a famous saying..."
+"All-in is a form of wisdom.")---",15},
+
+    {R"---(以防你们不知道，我们做CVS的时候一直都在吹泡泡（cpp）！)---",
+     R"---(In case you didn't know, we've been blowing bubbles (cpp) the whole time while developing CVS!)---",
+     R"---(以防你们不知道，我们做CVS的时候一直都在吹泡泡（cpp）！)---",
+     R"---(In case you didn't know, we've been blowing bubbles (cpp) the whole time while developing CVS!)---",15},
+
+    {R"---(？！换变兹伦洛伦兹变换！？)---",
+     R"---(?!noitamrofsnarT ztneroLorentz Transformation!?)---",
+     R"---(？！换变兹伦洛伦兹变换！？)---",
+     R"---(?!noitamrofsnarT ztneroLorentz Transformation!?)---",15},
+
+    {R"---(「CENSORED」)---",
+     R"---([CENSORED])---",
+     R"---(「CENSORED」)---",
+     R"---([CENSORED])---",79}
 };
 
 static int tip_count=sizeof(tips)/sizeof(tips[0]);
@@ -596,10 +674,10 @@ static stuDis stuDesc[]={
     // id=6  A06
     {"A06","90","100","100","10",
      "[LaoDa]: Takes 0.78x damage from LaoMen; deals 1.1x damage to them.\n[LoseJ]: Immune to SAN damage; nearby allies take 1.1x SAN effects.",
-     "{Early Warning}: -5 STA; +5 SAN to two allies; -20 SAN target; target   |\n| takes 1.2x damage next turn."},
+     "{EarlyWarning}: -5 STA; +5 SAN to two allies; -20 SAN target; target   |\n| takes 1.2x damage next turn."},
     // id=7  A07
     {"A07","280","200","200","1",
-     "[Great Luck]: Redirects 80% of ally damage to self.\n[Unbreakable]: First death: MAX HP->140, heal to 70 HP, STA->1.",
+     "[GreatLuck]: Redirects 80% of ally damage to self.\n[Unbreakable]: First death: MAX HP->140, heal to 70 HP, STA->1.",
      "{RenShengA}: -5 STA; 20% chance to reflect original damage to attacker  |\n| (entire class)."},
     // id=8  A08
     {"A08","100","100","100","8",
@@ -634,7 +712,7 @@ static stuDis stuDesc[]={
     // id=16 B03
     {"B03","100","100","100","6",
      "[Tutor(TA)]: +2 ATK, +20% HP/SAN/STA caps when teacher is Math.\n[Calm&Composed]: +5 HP at end of each turn.\n[MathDUO]: +10% caps when A10 is on the same team.",
-     "{???}: ATK=5; +10 SAN, +10 STA self; -10 SAN, -10 STA target."},
+     "{HalfAngle}: ATK=5; +10 SAN, +10 STA self; -10 SAN, -10 STA target."},
     // id=17 B04
     {"B04","74","36","110","11",
      "[GeniusBEET]: Takes 0.8x damage.\n[ForeignFriend]: All allies -15% damage taken during English A/B.\n[LaoKing]: +20 STA, +20 SAN at end of class.\nUnaffected by subject effects.",
@@ -650,7 +728,7 @@ static stuDis stuDesc[]={
     // id=20 B07
     {"B07","104","86","106","11",
      "[CowStrength]: STAgain x1.3, SANgain x1.1; STAloss x0.9, SANloss x0.95.\n[Sigma]: Immune to CatGirl and Madness. Cannot be marked by SwapSeat.\n[BothHigh&Cold]: Immune to all ally buffs except A09.",
-     "{???}: (Active skill coming soon)"},
+     "{ScythedDown}: -10 STA; attack target; if HP>=20% max, HP->20%, +6 ATK  |\n| this class; else if SAN>=20%max, SAN->20%, 1.8x damage this class; else |\n| SAN->20%. Once per class."},
     // id=21 B08
     {"B08","108","98","104","10",
      "[BreachOfFaith]: 10% damage reduction; 15% reduction and 90% be_att_mul\nduring English B.\n[KongyiJi]: During Math, lose 2xATK HP and ATK SAN, first attack ATKx2.",
@@ -658,11 +736,11 @@ static stuDis stuDesc[]={
     // id=22 B09
     {"B09","103","100","98","10",
      "[Adonis]: 1.5x ATK when A09 is on the same team.\n[Sad]: When HP<=65, 0.4x ATK and 0.2x be_att_mul; restore when HP>65.\n[Perfect...Miss...]: If any bar contains digit 2, +11 HP, +16 STA.",
-     "{???}: (Active skill coming soon)"},
+     "{Fiddler}: -10 STA, +5 SAN; attack target; if actual damage>theoretical |\n| damage, self gain (diff) ATK permanently, target lose (diff/2) ATK      |\n| permanently. Once per target, once per 2 days."},
     // id=23 B10
     {"B10","96","80","98","7",
      "[Subjective]: ATK multiplier and be_att_mul x(1+0.2x alive) each turn.\n[Shouldn't...]: When insane, deal 5x(ATK x att_mul+tmp) damage (capped\n45) to all enemies, self HP x0.3.",
-     "{???}: (Active skill coming soon)"},
+     "{UnforeseenDisaster}: -10 STA,-5 SAN per death; for each death, deal 6x |\n| damage and 4xSAN loss to enemies; attack target with ATK-2. Requires at |\n| least 1 death."},
     // id=24 B11
     {"B11","104","100","102","9",
      "[OneMoreFoot]: 99% chance to cancel lethal attack, target loses 5 SAN.\n[SongsTalent]: +10 SAN to all allies at start of each turn.",

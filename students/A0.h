@@ -39,11 +39,13 @@ class stud{
 		int white,white_up;
 		// 新版乘区系统：vector存储，pair.first=倍率，pair.second=剩余回合数
 		vector<pair<double,int>> white_mul,blue_mul,red_mul;
+		vector<pair<double,int>> white_mul_p,blue_mul_p,red_mul_p;
 		int att;
 		vector<pair<double,int>> att_mul,be_att_mul;
 		vector<pair<int,int>> tmp_att_plus;  // 临时攻击力加成 (值, 剩余回合)
 		vector<int>py;
 		vector<string>ct1,ct2;
+		bool HavCt[10];
 		
 		int id=0;
 		string name="A0";
@@ -54,6 +56,7 @@ class stud{
 		bool is_crazy=0;
 		int status=1;
 		
+		
 		// 听讲
 		bool listen=1;
 		int listen_punish=0;
@@ -61,13 +64,15 @@ class stud{
 		char chinese_double=0,chinese_forgive=0,chinese_pass=0;
 		// A04超能力者标记
 		bool espp=0;
+		bool affected=0;// get_att要用，写在A0.h
+			// @delHYfish 或者你有更好的做法也可以移至A13.h
 		// B06隐藏血条
 		bool hide_bars=0;
 		// A09全局（给我待在A0！！）
 		bool firstTurnA9=0,fromA9=0;
 		
 		// 计算当前是第几天第几节课第几回合
-		pair<pair<int,int>,int> Dtee(){
+		pair<pair<int,int>,int>Dtee(){
 			int d=tim/26+1;
 			int c=tim%26>21?8:tim%26/3+1;
 			int t=tim-(d-1)*26-(d-1)*26;
@@ -75,27 +80,57 @@ class stud{
 		}
 		
 		// 获取当前红条倍率 (sc: 0=增加时, 1=减少时)
-		double get_red_mul(){
+		double get_red_mul(int sc){
 			double ans=1.0;
-			for(auto y:red_mul) ans*=y.first;
-			return ans;
+			if(sc==1){
+				for(auto y:red_mul) ans*=y.first;				 
+				return ans;
+			}else{
+				for(auto y:red_mul_p) ans*=y.first;			 
+				return ans;
+			}
 		}
-		double get_blue_mul(){
+		double get_blue_mul(int sc){
 			double ans=1.0;
-			for(auto y:blue_mul) ans*=y.first;
-			return ans;
+			if(sc==1){
+				for(auto y:blue_mul) ans*=y.first;				 
+				return ans;
+			}else{
+				for(auto y:blue_mul_p) ans*=y.first;			 
+				return ans;
+			}
 		}
-		double get_white_mul(){
+		double get_white_mul(int sc){
 			double ans=1.0;
-			for(auto y:white_mul) ans*=y.first;
-			return ans;
+			if(sc==1){
+				for(auto y:white_mul) ans*=y.first;				 
+				return ans;
+			}else{
+				for(auto y:white_mul_p) ans*=y.first;			 
+				return ans;
+			}
 		}
 		
 		// 获取最终攻击力
 		int get_att(){
 			double ans=att;
-			for(auto y:att_mul) ans*=y.first;
-			for(auto y:tmp_att_plus) ans+=y.first;
+			for(auto y:att_mul){ans*=y.first;}
+			for(auto y:tmp_att_plus){ans+=y.first;}
+			
+			// 当数值异常时输出
+			if((ans>999||ans<-999)&&debug_on){
+				if(espp){
+					logPrint(12,"[DEBUG] %s: unfathomable power\n",name.c_str());
+				}else if(affected){
+					logPrint(12,"[DEBUG] %s: granted divine inspiration from A04L (value: %.0f)\n",name.c_str(),ans);
+				}else{
+					logPrint(12,"[DEBUG] %s get_att() = %.0f (abnormal!)\n",name.c_str(),ans);
+					logPrint(12,"  att=%d, att_mul size=%d, tmp_att_plus size=%d\n",
+						att,(int)att_mul.size(),(int)tmp_att_plus.size());
+					for(auto y:att_mul){logPrint(12,"    att_mul: %.2f x %d turns\n",y.first,y.second);}
+					for(auto y:tmp_att_plus){logPrint(12,"    tmp_att_plus: %d x %d turns\n",y.first,y.second);}
+				}
+			}
 			return (int)ans;
 		}
 		// 重载：传入临时攻击力
@@ -121,30 +156,26 @@ class stud{
 			return ans;
 		}
 		
-		// 扣血
 		virtual int cred(int chg){
-			if(chg<0){red+=chg*get_red_mul();}
-			else{red+=chg;}
+			if(chg<0){red+=chg*get_red_mul(1);}
+			else{red+=chg*get_red_mul(0);}
 			red=min(red,red_up);
 			if(red<0){red=0,status=0;}
 			return status;
 		}
-		// 扣体力
 		virtual int cwhite(int chg){
-			if(chg<0){white+=chg*get_white_mul();}
-			else{white+=chg;}
+			if(chg<0){white+=chg*get_white_mul(1);}
+			else{white+=chg*get_white_mul(1);}
 			white=min(white,white_up);
 			if(white<0){
 				status=-1;
-				// A10技能重置逻辑移至子类
 			}
 			else if(white>=0&&status==-1){status=1;}
 			return status;
 		}
-		// 扣理智
 		virtual int cblue(int chg){
-			if(chg<0){blue+=chg*get_blue_mul();}
-			else{blue+=chg;}
+			if(chg<0)if(chg<0){if(id==6&&HavCt[2])chg*=0;blue+=chg*get_blue_mul(1);}
+			else{blue+=chg*get_blue_mul(0);}
 			blue=min(blue,blue_up);
 			if(blue<0){is_crazy=1;}
 			return status;
@@ -154,20 +185,20 @@ class stud{
 		virtual void after_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){;}
 		virtual int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			for(auto x:team){
-				if((*x).id==9&&rand()%100<=9){return 1;}
+				if((*x).id==9&&rand()%100<=9&&(*x).HavCt[1]){return 1;}
 			}
 			return 0;
 		}
 		virtual void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			int final_att=target->get_att()*get_be_att_mul();
 			for(auto x:team){
-				if((*x).id==7&&id!=7){
+				if((*x).id==7&&id!=7&&(*x).HavCt[1]){
 					(*x).cred(-final_att*0.8);
 					cred(final_att*0.8);
 				}
 			}
 			for(auto x:beside_team){
-				if((*x).id==9&&final_att>=18){
+				if((*x).id==9&&final_att>=18&&(*x).HavCt[2]){
 					cblue(-20);
 					cwhite(-10);
 				}
@@ -177,32 +208,26 @@ class stud{
 		// 回合开始：自动减少所有临时乘区的回合数
 		virtual void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			tim++;
-			// 红条倍率过期
 			for(int i=0;i<red_mul.size();i++){
 				if(red_mul[i].second<=0) red_mul.erase(red_mul.begin()+i),i--;
 				else red_mul[i].second--;
 			}
-			// 蓝条倍率过期
 			for(int i=0;i<blue_mul.size();i++){
 				if(blue_mul[i].second<=0) blue_mul.erase(blue_mul.begin()+i),i--;
 				else blue_mul[i].second--;
 			}
-			// 白条倍率过期
 			for(int i=0;i<white_mul.size();i++){
 				if(white_mul[i].second<=0) white_mul.erase(white_mul.begin()+i),i--;
 				else white_mul[i].second--;
 			}
-			// 攻击倍率过期
 			for(int i=0;i<att_mul.size();i++){
 				if(att_mul[i].second<=0) att_mul.erase(att_mul.begin()+i),i--;
 				else att_mul[i].second--;
 			}
-			// 受击倍率过期
 			for(int i=0;i<be_att_mul.size();i++){
 				if(be_att_mul[i].second<=0) be_att_mul.erase(be_att_mul.begin()+i),i--;
 				else be_att_mul[i].second--;
 			}
-			// 临时攻击力加成过期
 			for(int i=0;i<tmp_att_plus.size();i++){
 				if(tmp_att_plus[i].second<=0) tmp_att_plus.erase(tmp_att_plus.begin()+i),i--;
 				else tmp_att_plus[i].second--;
@@ -240,7 +265,7 @@ class stud{
 		virtual void on_enemy_death(vector<stud*>&team){;}
 		virtual bool isAway()const{return 0;}
 		virtual void resetDaily(){;}
-		virtual void resetRain(){;}
+		virtual int get_dead_count(bool is_late_night){return 0;}
 		virtual void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){;}
 		
 		stud(){
@@ -250,17 +275,23 @@ class stud{
 			white_mul.push_back({1.0,0x7f7f7f7f});
 			blue_mul.push_back({1.0,0x7f7f7f7f});
 			red_mul.push_back({1.0,0x7f7f7f7f});
+			white_mul_p.push_back({1.0,0x7f7f7f7f});
+			blue_mul_p.push_back({1.0,0x7f7f7f7f});
+			red_mul_p.push_back({1.0,0x7f7f7f7f});
 			att=10;
 			att_mul.push_back({1.0,0x7f7f7f7f});
 			be_att_mul.push_back({1.0,0x7f7f7f7f});
 			tmp_att_plus.push_back({0,0x7f7f7f7f});
+			HavCt[1]=0;
+			HavCt[2]=0;
+			HavCt[0]=0;//
 			py.clear();
 			ct1.clear();
 			ct2.clear();
 			
 			id=0;name="A0";
 			Bighuocar=0;
-			espp=0;
+			espp=affected=0;
 			hide_bars=0;
 		}
 };
