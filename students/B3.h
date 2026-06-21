@@ -6,7 +6,7 @@ class stud_B3:public stud{
 		bool has_A10=0;  // 从A0移入
 
 		stud_B3(){
-			red_up+=0,blue_up+=0,white_up+=0;
+			red_up+=30,blue_up+=20,white_up+=10;
 			red=red_up,blue=blue_up,white=white_up;
 			att-=4;
 			py.push_back(1);
@@ -24,7 +24,7 @@ class stud_B3:public stud{
 		
 		void on_turn_end(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team) override {
 			stud::on_turn_end(target,teach,team,beside_team);
-			if(HavCt[2])cred(5);
+			cred(5);
 		}
 		
 		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){

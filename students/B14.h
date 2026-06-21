@@ -16,26 +16,20 @@ class stud_B14:public stud{
 			name="B14";
 		}
 		
-		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::before_att(target,teach,team,beside_team);
+		Return_Hit before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_Hit return_num=stud::before_att(target,teach,team,beside_team);
 			return return_num;
 		}
 		
 		void after_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			stud::after_att(target,teach,team,beside_team);	
-			if(HavCt[2]){
-				int sbhc=rand()*rand()%3,rzhc=rand()*rand()%team.size();
-				if(sbhc==1)(*team[rzhc]).cred(6);
-				else if(sbhc==2)(*team[rzhc]).cwhite(6);
-				else (*team[rzhc]).cblue(6);	
-			}	
+			stud::after_att(target,teach,team,beside_team);		
 			
 		}
 		
-		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
-			if(HavCt[1])return 3;
-			else return return_num;		
+		Return_BeHit on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_BeHit return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
+			if(HavCt[1]){return_num.update(pair<int,pair<int,int>>{1,{10,0}});}
+			return return_num;		
 		}
 		
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
@@ -46,10 +40,7 @@ class stud_B14:public stud{
 		void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_start(target,teach,team,beside_team);
 			if(HavCt[2]){
-				int sbhc=rand()*rand()%3;
-				if(sbhc==1)cred(6);
-				else if(sbhc==2)cwhite(6);
-				else cblue(6);
+				
 				int tmp_tmp_att_plus=get_tmp_att_plus();
 				if(blue<60){
 					if(att+tmp_tmp_att_plus-3>=0){
@@ -63,5 +54,13 @@ class stud_B14:public stud{
 		
 		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::skhit(target,teach,team,beside_team);
+			int sbhc=rand()*rand()%3;
+				if(sbhc==1)cred(6);
+				else if(sbhc==2)cwhite(6);
+				else cblue(6);
+			int rzhc=rand()*rand()%team.size();
+				if(sbhc==1)(*team[rzhc]).cred(6);
+				else if(sbhc==2)(*team[rzhc]).cwhite(6);
+				else (*team[rzhc]).cblue(6);
 		}
 };

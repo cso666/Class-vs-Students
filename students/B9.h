@@ -11,9 +11,9 @@ class stud_B9:public stud{
 			is_upset=0;
 			last_use_day=-1;
 			original_att=att;
-			red_up+=3,blue_up+=0,white_up-=2;
+			red_up+=13,blue_up+=0,white_up-=2;
 			red=red_up,blue=blue_up,white=white_up;
-			att+=0;
+			att+=2;
 			py.push_back(4);
 			ct1.pb("Adonis");
 			ct1.pb("Sad");
@@ -22,18 +22,19 @@ class stud_B9:public stud{
 			name="B09";
 		}
 		
-		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::before_att(target,teach,team,beside_team);
-			if(HavCt[1])for(auto y:team){
+		Return_Hit before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_Hit return_num=stud::before_att(target,teach,team,beside_team);
+			if(HavCt[1]){
+			for(auto y:team){
 				if((*y).id==9){
-					att_mul.push_back({1.5,0x7f7f7f7f});
+					att_mul.push_back({1.2,0});
 				}
-			}
+			}}
 			return return_num;
 		}
 		
-		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
+		Return_BeHit on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_BeHit return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
 			return return_num;		
 		}
 		
@@ -44,34 +45,19 @@ class stud_B9:public stud{
 		void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_start(target,teach,team,beside_team);
 			if(HavCt[2]){
-				if(red<=65){
-					att_mul[0].first=0.4;
-					be_att_mul[0].first=0.2;
+				if(red<=30){
+					att_mul[0].first=0.3;
+					be_att_mul[0].first=0.6;
 					is_upset=1;
+					cred(-2);
+					cblue(-10);
 				}
 				if(is_upset==1&&red>65){
 					att_mul[0].first=1.0;
 					be_att_mul[0].first=1.0;
 					is_upset=0;
 				}
-				
-				bool isin2=0;
-				int tr=red,tb=blue,tw=white;
-				while(tr){
-					if(tr%10==2){isin2=1;}
-					tr/=10;
-				}
-				while(tb){
-					if(tb%10==2){isin2=1;}
-					tb/=10;
-				}
-				while(tw){
-					if(tw%10==2){isin2=1;}
-					tw/=10;
-				}
-				if(isin2){cred(11),cwhite(16);}	
 			}
-			
 		}
 
 		void on_day_start(int subject_id){;}
@@ -119,7 +105,7 @@ class stud_B9:public stud{
 			int delta=max(x-y,0);
 			
 			if(delta>0){
-				tmp_att_plus.push_back({delta,0x7f7f7f7f});
+				tmp_att_plus.push_back({delta/3,0x7f7f7f7f});
 				target->att-=delta/2;
 				if(target->att<0){target->att=0;}
 				

@@ -10,9 +10,9 @@ class stud_B8:public stud{
 		
 		stud_B8(){
 			be_att_mul[0].first*=0.7;
-			red_up+=8,blue_up-=2,white_up+=4;
+			red_up+=28,blue_up-=22,white_up+=24;
 			red=red_up,blue=blue_up,white=white_up;
-			att+=0;
+			att+=2;
 			fight_active=0;
 			fight_turnsLeft=0;
 			py.push_back(14);
@@ -25,13 +25,15 @@ class stud_B8:public stud{
 			base_be_att_mul = be_att_mul[0].first;
 		}
 		
-		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			if(HavCt[1])if(teach==2){att_mul.push_back({2.0,1});}
-			return stud::before_att(target,teach,team,beside_team);
+		Return_Hit before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_Hit return_num= stud::before_att(target,teach,team,beside_team);
+			if(HavCt[1]){if(teach==2){att_mul.push_back({2.0,0});}
+			}
+			return return_num;
 		}
 
-		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
+		Return_BeHit on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_BeHit return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
 			return return_num;		
 		}
 		
@@ -42,22 +44,25 @@ class stud_B8:public stud{
 		void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_start(target,teach,team,beside_team);
 			
-			if(HavCt[1])if(teach==4){
-				att_mul.push_back({0.7,1});
-				be_att_mul.push_back({1.4,1});
+			if(HavCt[1]){
+			if(teach==4){
+				att_mul.push_back({0.7,0});
+				be_att_mul.push_back({1.4,0});
 				ifai=1;
-			}
-			if(HavCt[2])for(auto y:beside_team){
+			}}
+			if(HavCt[2]){
+			for(auto y:beside_team){
 				if((*y).id==19){
 					cblue(-3);
 					(*y).cblue(-3);
-					tmp_att_plus.push_back({2,1});
-					(*y).tmp_att_plus.push_back({2,1});
+					tmp_att_plus.push_back({2,0});
+					(*y).tmp_att_plus.push_back({2,0});
 				}
-			}
+			}}
 			
 			// WantFight? 持续效果
-			if(HavCt[2])if(fight_active){
+			if(HavCt[2]){
+			if(fight_active){
 				// 每回合 +2 HP
 				cred(2);
 				
@@ -71,7 +76,7 @@ class stud_B8:public stud{
 					cred(-8);
 					if(debug_on){logPrint(10,"[B08] WantFight? ended! -20 STA, -8 HP\n");}
 				}
-			}
+			}}
 		}
 		
 		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){

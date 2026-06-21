@@ -6,8 +6,8 @@ IDI_ICON1 ICON "icon.ico"
 
 // 版本信息资源
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION     0,3,1,0
-PRODUCTVERSION  0,3,1,0
+FILEVERSION     1,1,1,3
+PRODUCTVERSION  1,1,1,3
 FILEFLAGSMASK   0x3fL
 FILEFLAGS       0x0L
 FILEOS          0x00040004L
@@ -19,14 +19,14 @@ BEGIN
     BEGIN
         BLOCK "040904B0" 
         BEGIN
-            VALUE "CompanyName", "801 Dev Team\0"
+            VALUE "CompanyName", "Asential Dev Team\0"
             VALUE "FileDescription", "Class vs. Students\0"
-            VALUE "FileVersion", "0.3.1.0\0"
+            VALUE "FileVersion", "1.1.1.3\0"
             VALUE "InternalName", "Class vs. Students\0"
             VALUE "LegalCopyright", "None\0"
             VALUE "OriginalFilename", "main.exe\0"
             VALUE "ProductName", "Class vs. Students\0"
-            VALUE "ProductVersion", "0.3.1.0\0"
+            VALUE "ProductVersion", "1.1.1.3\0"
         END
     END
     

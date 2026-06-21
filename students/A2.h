@@ -16,20 +16,32 @@ class stud_A2:public stud{
 			id=2;
 			name="A02";
 		}
+
+		void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			stud::on_turn_start(target,teach,team,beside_team);
+			
+			if(HavCt[1]){
+				if(blue<=40){
+					can_act=0;
+					cant_act++;
+					if(debug_on){
+						logPrint(10,"[A02] SAN <= 40! A02 is disabled this turn.\n");
+					}
+				}
+			}
+		}
 		
-		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::before_att(target,teach,team,beside_team);
-			if(blue<=40){
-				can_act=false;
-				cant_act++;
-			}
-			if(HavCt[1])if((*target).name=="B10"){
-				tmp_att_plus.push_back({5,1});
+		Return_Hit before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_Hit return_num=stud::before_att(target,teach,team,beside_team);
+			if(HavCt[1]){
+			if((*target).name=="B10"){
+				tmp_att_plus.push_back({5,0});
 				cblue(-24);
-			}
-			if(HavCt[2])if((rand()*rand())%3==1){
-				tmp_att_plus.push_back({5,1});
-			}
+			}}
+			if(HavCt[2]){
+			if((rand()*rand())%3==1){
+				tmp_att_plus.push_back({5,0});
+			}}cwhite(5);
 			return return_num;
 		}
 		
@@ -37,8 +49,8 @@ class stud_A2:public stud{
 			stud::after_att(target,teach,team,beside_team);			
 		}
 		
-		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);		
+		Return_BeHit on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_BeHit return_num=stud::on_before_be_atted(target,teach,team,beside_team);		
 			return return_num;			
 		}
 		

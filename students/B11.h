@@ -5,9 +5,9 @@ public:
 	int guest_turnsLeft=0,guest_marked=0;  // 从A0移入
 
 	stud_B11(){
-		red_up+=4,blue_up+=0,white_up+=2;
+		red_up+=10,blue_up+=0,white_up+=20;
 		red=red_up,blue=blue_up,white=white_up;
-		att-=1;
+		att+=1;
 		py.push_back(8);
 		py.push_back(14);
 		
@@ -21,19 +21,22 @@ public:
 		guest_marked=0;
 	}
 
-	int before_att(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team){
-		int return_num=stud::before_att(target,teach,team,beside_team);
+	Return_Hit before_att(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team){
+		Return_Hit return_num=stud::before_att(target,teach,team,beside_team);
 		
 		// OneMoreFoot
 		if(HavCt[1]){
 			int final_att=get_att()*target->get_be_att_mul();
 			if(target->red<=final_att){
-				if(rand()%100<99){
+				if(rand()%100<69){
 					target->cblue(-5);
+					for(auto y:beside_team){
+						if((*y).blue>(*target).blue)(*y).blue=(*target).blue;
+					}
 					if(debug_on){
 						logPrint(12,"[B11] OneMoreFoot: Attack cancelled, %s loses 5 SAN instead.\n",target->name.c_str());
 					}
-					return 1;
+					return_num.update(pair<int,pair<double,int>>{2,{1.0,0}});
 				}
 			}	
 		}
@@ -44,12 +47,13 @@ public:
 
 	void after_att(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team){
 		stud::after_att(target,teach,team,beside_team);
-		if(HavCt[1])if(target->red<=25){
+		if(HavCt[1]){
+		if(target->red<=25){
 			tmp_att_plus.push_back({4,0x7f7f7f7f});
-		}
+		}}
 	}
 
-	int on_before_be_atted(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team){
+	Return_BeHit on_before_be_atted(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team){
 		return stud::on_before_be_atted(target,teach,team,beside_team);
 	}
 
@@ -60,7 +64,8 @@ public:
 	void on_turn_start(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team){
 		stud::on_turn_start(target,teach,team,beside_team);
 		// SongsTalent
-		if(HavCt[2])for(auto y:team){y->cblue(10);}
+		if(HavCt[2]){for(auto y:team){y->cblue(10);}
+		}
 		
 		// 嘉宾
 		if(guest_turnsLeft>0){

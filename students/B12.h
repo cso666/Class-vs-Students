@@ -5,11 +5,12 @@ public:
 	bool have_dead;
 	int shake_turnsLeft=0;  // 从A0移入
 	bool shake_active=0;  // 从A0移入
-
+	int hurt_cnt=0;
 	stud_B12(){
 		have_dead=0;
 		red_up-=4,blue_up-=0,white_up+=40;
 		red=red_up,blue=blue_up,white=white_up;
+		white_up=999;
 		att-=1;
 		ct1.pb("HitPlane");
 		ct1.pb("Letsrun");
@@ -20,8 +21,8 @@ public:
 		shake_active=0;
 	}
 
-	int before_att(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team){
-		int return_num=stud::before_att(target,teach,team,beside_team);
+	Return_Hit before_att(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team){
+		Return_Hit return_num=stud::before_att(target,teach,team,beside_team);
 		int diff=white-target->white;
 		if(HavCt[1]){
 			cwhite(5);
@@ -38,23 +39,27 @@ public:
 		stud::after_att(target,teach,team,beside_team);
 	}
 
-	int on_before_be_atted(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team){
+	Return_BeHit on_before_be_atted(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team){
+		hurt_cnt=red;
 		return stud::on_before_be_atted(target,teach,team,beside_team);
 	}
 
 	void on_minus_red(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team){
 		stud::on_minus_red(target,teach,team,beside_team);
-		int final_att=target->get_att()*get_be_att_mul();
+		int final_att=hurt_cnt-red;
 		
-		if(HavCt[2])if(white>=max(30,2*final_att)){
+		if(HavCt[2]){
+			
+		if(white>=max(30,2*final_att)){
 			cred(final_att);
 			cwhite(-2*final_att);
 			if(debug_on){
 				logPrint(10,"[B12] Counter: healed %d HP, lost %d STA\n",final_att,2*final_att);
 			}
-		}
+		}}
 		
-		if(HavCt[1])if(red<=0&&have_dead==0){
+		if(HavCt[1]){
+		if(red<=0&&have_dead==0){
 			have_dead=1;
 			red_up=red_up-54;
 			red=red_up;
@@ -63,14 +68,16 @@ public:
 			if(debug_on){
 				logPrint(12,"[B12] Resurrected! Counterattack dealt %d damage\n",2*get_att());
 			}
-		}
+		}}
 	}
 
 	void on_turn_start(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team){
 		stud::on_turn_start(target,teach,team,beside_team);
 		cred(-3);
 		cwhite(6);
-		
+		if(HavCt[1]){
+			att=max(9,white/10);
+		}
 		if(shake_active){
 			cwhite(10);
 			if(debug_on){logPrint(10,"[B12] Shake effect: +10 STA this turn.\n");}
@@ -141,5 +148,7 @@ public:
 		shake_turnsLeft=3;
 		listen=0;
 		if(debug_on){logPrint(10,"[B12] Shake effect active for 3 turns.\n");}
+		
+		if((*target).red<=0)cwhite(50);
 	}
 };

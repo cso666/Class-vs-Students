@@ -7,7 +7,7 @@ class stud_B1:public stud{
 		bool ned=0;
 		stud_B1(){
 			ned=0;
-			red_up+=5,blue_up+=20,white_up-=12;
+			red_up+=15,blue_up+=30,white_up-=12;
 			red=red_up,blue=blue_up,white=white_up;
 			
 			be_att_mul[0].first=1.0;
@@ -20,8 +20,8 @@ class stud_B1:public stud{
 			name="B01";
 		}
 		
-		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::before_att(target,teach,team,beside_team);
+		Return_Hit before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_Hit return_num=stud::before_att(target,teach,team,beside_team);
 			return return_num;
 		}
 		
@@ -30,12 +30,12 @@ class stud_B1:public stud{
 			cwhite(1);		
 		}
 		
-		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
+		Return_BeHit on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_BeHit return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
 			if((target -> id)!=20){
 				catG-=(rand()*rand()%10+10)*0.01;
 			}
-			if(HavCt[1])be_att_mul.push_back({catG,1});
+			if(HavCt[1])be_att_mul.push_back({catG,0});
 			catG=1.0;
 			return return_num;		
 		}
@@ -61,9 +61,9 @@ class stud_B1:public stud{
 			}
 			else{
 				swaP[target]=0;
-				int final_att=get_att(att+6)*(*target).get_be_att_mul();
-				(*target).cred(final_att);
-				(*target).cwhite(-10);
+				int final_att=get_att(att+10)*(*target).get_be_att_mul();
+				(*target).cred(-1*final_att);
+				(*target).cwhite(-20);
 				att-=1;
 				cred(5);
 				cwhite(-7);

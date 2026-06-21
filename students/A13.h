@@ -3,7 +3,7 @@
 class stud_A13:public stud{
 	public:
 		int ypw_left=0,ypw_oria=0;  // 从A0移入
-		
+		int hurt_cnt=0;
 		stud_A13(){
 			red_up-=10,blue_up+=-10,white_up-=-30;
 			red=red_up,blue=blue_up,white=white_up;
@@ -19,32 +19,32 @@ class stud_A13:public stud{
 			ypw_oria=att;
 		}
 
-		int before_att(stud*target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::before_att(target,teach,team,beside_team);
-			int wum=0;
+		Return_Hit before_att(stud*target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_Hit return_num=stud::before_att(target,teach,team,beside_team);
+			int wum=0,al=0;
 			for(auto x:team){
 				if(x->espp){affected=1;}// 这叫获得神谕！！
-				wum+=x->white;
+				if((*x).status==1)wum+=x->white,al++;
 			}
-			if(HavCt[1])att_mul.push_back({max(wum/500.0,1.0),1});
+			if(HavCt[1])att_mul.push_back({max(wum/(al*100.0),1.0),0});
 			return return_num;
 		}
 
-		int on_before_be_atted(stud*target,int teach,vector<stud*>team,vector<stud*>beside_team){
+		Return_BeHit on_before_be_atted(stud*target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			hurt_cnt=red;
 			return stud::on_before_be_atted(target,teach,team,beside_team);
 		}
 		
 		void on_minus_red(stud*target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_minus_red(target,teach,team,beside_team);
-			int final_att=(*target).get_att()*get_be_att_mul();
-			if(HavCt[2])cwhite(final_att);
+			if(HavCt[2])cwhite(hurt_cnt-red);
 		}
 
 		void on_turn_start(stud*target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_start(target,teach,team,beside_team);
 			affected=0;
 			if(ypw_left>0){
-				if(white<white_up*0.7){
+				if(white<white_up*0.7){ 
 					ypw_left=0;
 					att=ypw_oria;
 					if(debug_on){logPrint(10,"[A13] Year Pig Weigh ended early (STA < 70%%), ATK restored to %d.\n",att);}

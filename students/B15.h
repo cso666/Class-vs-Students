@@ -8,7 +8,7 @@ class stud_B15:public stud{
 
 	public:
 		stud_B15(){
-			red_up+=2,blue_up+=0,white_up+=0;
+			red_up+=20,blue_up+=0,white_up+=0;
 			red=red_up,blue=blue_up,white=white_up;
 			att-=2;
 			original_att=att;
@@ -24,10 +24,11 @@ class stud_B15:public stud{
 		
 		void on_minus_red(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team) override {
 			stud::on_minus_red(target,teach,team,beside_team);
-			if(HavCt[1])if(is_spr){
+			if(HavCt[1]){
+			if(is_spr){
 				is_spr=0;
 				if(debug_on){logPrint(12,"[B15] %s was hit! Transformed into Ghost of the Bad Rain!\n",name.c_str());}
-			}
+			}}
 		}
 		
 		void on_turn_end(stud* target,int teach,vector<stud*> team,vector<stud*> beside_team) override {
@@ -40,6 +41,7 @@ class stud_B15:public stud{
 						if(s&&isalive[s->id]&&s->red>=0){
 							double ratio=(double)s->red/s->red_up;
 							if(ratio<min_ratio){min_ratio=ratio,target_student=s;}
+							(*s).cred((*s).red_up*0.02);
 						}
 					}
 					if(target_student){
@@ -49,7 +51,7 @@ class stud_B15:public stud{
 							rain--;
 							if(debug_on){logPrint(10,"[B15-PefectRain] %s restored to 20%% HP! Rain left: %d\n",target_student->name.c_str(),rain);}
 						}else{
-							target_student->cred(target_student->red_up*0.02);
+							target_student->cred(target_student->red_up*0.05);
 							if(debug_on){logPrint(10,"[B15-PefectRain] %s restored 2%% HP.\n",target_student->name.c_str());}
 						}
 					}
@@ -68,7 +70,7 @@ class stud_B15:public stud{
 							rain--;
 							if(debug_on){logPrint(12,"[B15-PefectRain] %s was executed! Rain left: %d\n",target_enemy->name.c_str(),rain);}
 						}else{
-							target_enemy->cred(-target_enemy->red_up*0.02);
+							target_enemy->cred(-target_enemy->red_up*0.05);
 							if(debug_on){logPrint(12,"[B15-PefectRain] %s took 2%% HP damage.\n",target_enemy->name.c_str());}
 						}
 					}
@@ -85,7 +87,8 @@ class stud_B15:public stud{
 		}
 		
 		void on_enemy_death(vector<stud*>& team){
-			if(HavCt[2])for(auto*s:team){
+			if(HavCt[2]){
+			for(auto*s:team){
 				if(s&&isalive[s->id]&&s->red>=0){
 					if(s->is_crazy){
 						s->blue=1;
@@ -99,10 +102,16 @@ class stud_B15:public stud{
 						if(debug_on){logPrint(10,"[B15-SkywardFireworks] %s blue and white increased by 1.2x!\n",s->name.c_str());}
 					}
 				}
-			}
+			}}
 		}
 		
 		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::skhit(target,teach,team,beside_team);
+			cwhite(rand()%6+15);
+			cblue(-8);cred(5);
+			(*target).cblue(-14);(*target).cred(-7);
+			if(rand()%1000<=500) is_spr=!is_spr;
+			if(is_spr)cblue(8),cred(5);
+			else (*target).cblue(-8),(*target).cred(-5);
 		}
 };

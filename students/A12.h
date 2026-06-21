@@ -24,20 +24,17 @@ class stud_A12: public stud{
 			ega_turnsLeft=0;
 		}
 		
-		int before_att(stud*target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::before_att(target,teach,team,beside_team);
-			if(HavCt[2])if(target->id==8){
-				int final_att=get_att()*(*target).get_be_att_mul();
-				for(auto x:beside_team){
-					if(x->id!=8){x->cred((rand()%40)*0.01*final_att);}
-				}
+		Return_Hit before_att(stud*target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_Hit return_num=stud::before_att(target,teach,team,beside_team);
+			if(target->id==8){
+				return_num.update(pair<int,pair<double,int>>{2,{1.10,0}});
 			}
 			return return_num;
 		}
 
-		int on_before_be_atted(stud*target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);
-			be_att_mul.push_back({max((150.0-blue)/150.0,1.0),1});
+		Return_BeHit on_before_be_atted(stud*target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_BeHit return_num=stud::on_before_be_atted(target,teach,team,beside_team);
+			if(HavCt[1])be_att_mul.push_back({1+max((150.0-blue)/150.0,1.0),0});
 			return return_num;
 		}
 
@@ -48,7 +45,7 @@ class stud_A12: public stud{
 			if(tim%26!=0){return;}
 			int HTclas=0;
 			for(int i=0;i<7;i++){HTclas+=classtablee[date][i]==2;}
-			if(HavCt[1])cred(HTclas*5);// 我吃好了
+			if(HavCt[2])cred(HTclas*5);// 我吃好了
 			
 			if(ega_turnsLeft>0){
 				cred(10);

@@ -10,7 +10,7 @@ class stud_A1:public stud{
 			red_up+=25,blue_up+=0,white_up+=0;
 			red=red_up,blue=blue_up,white=white_up;
 			white_mul[0].first*=1.25;
-			att+=5;
+			att+=3;
 			py.push_back(15);
 			py.push_back(3);
 			py.push_back(10); 
@@ -22,15 +22,17 @@ class stud_A1:public stud{
 			name="A01";
 		}
 		
-		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::before_att(target,teach,team,beside_team);
-			if(HavCt[1])if((rand()*rand())%20==16){
-				tmp_att_plus.push_back({5,1});
+		Return_Hit before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_Hit return_num=stud::before_att(target,teach,team,beside_team);
+			if(HavCt[1]){
+			if((rand()*rand())%100<7){
+				tmp_att_plus.push_back({5,0});
 				if(HavCt[2]){
 					(*target).can_act=false;
 					(*target).cant_act++;	
 				}
 				is_plusatt=1;
+			}	
 			}
 			return return_num;
 		}
@@ -39,8 +41,8 @@ class stud_A1:public stud{
 			stud::after_att(target,teach,team,beside_team);			
 		}
 		
-		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);		
+		Return_BeHit on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_BeHit return_num=stud::on_before_be_atted(target,teach,team,beside_team);		
 			return return_num;
 		}
 		

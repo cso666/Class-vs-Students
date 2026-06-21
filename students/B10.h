@@ -15,8 +15,8 @@ class stud_B10:public stud{
 			name="B10";
 		}
 		
-		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::before_att(target,teach,team,beside_team);
+		Return_Hit before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_Hit return_num=stud::before_att(target,teach,team,beside_team);
 			return return_num;
 		}
 		
@@ -24,8 +24,8 @@ class stud_B10:public stud{
 			stud::after_att(target,teach,team,beside_team);			
 		}
 		
-		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
+		Return_BeHit on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_BeHit return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
 			return return_num;		
 		}
 		
@@ -55,10 +55,10 @@ class stud_B10:public stud{
 			stud::on_turn_start(target,teach,team,beside_team);
 			if(HavCt[1]){
 				cnt_x=0;
-				for(auto y:team){cnt_x+=(*y).status==1;}
-				for(auto y:beside_team){cnt_x+=(*y).status==1;}
-				att_mul[0].first=1+0.2*cnt_x;
-				be_att_mul[0].first=1+0.2*cnt_x;
+				for(auto y:team){cnt_x+=(*y).status==0;}
+				for(auto y:beside_team){cnt_x+=(*y).status==0;}
+				att_mul[0].first*=1+0.4*cnt_x;
+				be_att_mul[0].first*=1+0.4*cnt_x;
 				
 				if(HavCt[2])if(is_crazy){
 					for(auto y:beside_team){(*y).cred(5*get_att());}

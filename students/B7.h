@@ -8,7 +8,7 @@ class stud_B7:public stud{
 		bool ned=0;
 		stud_B7(){
 			ned=0;
-			red_up+=4,blue_up-=14,white_up+=6;
+			red_up+=34,blue_up-=24,white_up+=16;
 			red=red_up,blue=blue_up,white=white_up;
 			att+=1;
 			skill_active=0;
@@ -22,8 +22,8 @@ class stud_B7:public stud{
 			name="B07";
 		}
 		
-		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::before_att(target,teach,team,beside_team);
+		Return_Hit before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_Hit return_num=stud::before_att(target,teach,team,beside_team);
 			return return_num;
 		}
 		
@@ -31,8 +31,8 @@ class stud_B7:public stud{
 			stud::after_att(target,teach,team,beside_team);			
 		}
 		
-		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
+		Return_BeHit on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_BeHit return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
 			return return_num;		
 		}
 		
@@ -89,6 +89,8 @@ class stud_B7:public stud{
 				}else{
 					int target_san=blue_up*0.2;
 					cblue(target_san-blue);
+					att_rt.update(pair<int,pair<int,int>>{3,{0.2,8}});
+					(*target).cant_act+=3;
 					if(debug_on){logPrint(10,"[B07] SAN < 20%%, restored to 20%%. No bonus.\n");}
 				}
 			}

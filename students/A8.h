@@ -5,7 +5,7 @@ class stud_A8:public stud{
 		bool hasuse;
 		
 		stud_A8(){
-			red_up+=0,blue_up+=0,white_up+=0;
+			red_up+=0,blue_up+=10,white_up+=0;
 			red=red_up,blue=blue_up,white=white_up;
 			att-=2;
 			hasuse=0;
@@ -19,8 +19,8 @@ class stud_A8:public stud{
 			name="A08";
 		}
 		
-		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::before_att(target,teach,team,beside_team);
+		Return_Hit before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_Hit return_num=stud::before_att(target,teach,team,beside_team);
 			if(red==red_up&&blue==blue_up&&white==white_up&&att==8){att+=4;}
 			else if(att==12){att-=4;}
 			return return_num;
@@ -30,10 +30,10 @@ class stud_A8:public stud{
 			stud::after_att(target,teach,team,beside_team);	
 		}
 		
-		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);
-			if(HavCt[1])return 4;	
-			else return return_num;
+		Return_BeHit on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_BeHit return_num=stud::on_before_be_atted(target,teach,team,beside_team);
+			if(HavCt[1]){return_num.update(pair<int,pair<int,int>>{1,{18,0}});}
+			return return_num;
 		}
 		
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
@@ -42,7 +42,16 @@ class stud_A8:public stud{
 		
 		void on_turn_start(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_turn_start(target,teach,team,beside_team);
-			if(HavCt[2])for(auto x:team){(*x).att_mul.push_back({1.2,1});}
+			if(HavCt[2]){
+				int where=-1;
+				for(int i=0;i<team.size();i++){
+					if((*team[i]).id==8)where=i;
+				}
+				for(int i=0;i<team.size();i++){
+					if(i<where)(*team[i]).att_mul.push_back({1.2,0});
+					else(*team[i]).att_mul.push_back({1.2,1});
+				}
+			}
 		}
 		
 		void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){

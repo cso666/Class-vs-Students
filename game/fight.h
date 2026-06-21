@@ -1,16 +1,10 @@
 #ifndef __FIGHT_H__
 #define __FIGHT_H__
+#define __FIGHT_H_ver__ 18
+extern void clear_action_area();
 
-/*
- * fight.h - 战斗系统
- * 包含: hitt sk_hitt checkIN checkCL startTurn endTurn
- *       endBattle selAtt selTar selAct attExe canAct
- *       turn fight CVS_game CVS_main
- */
-
-// ========== 普通攻击 ==========
-void hitt(void*f1,void*f2,vector<void*>T1,vector<void*>T2){
-	if(f1==NULL||f2==NULL){return;}
+int hitt(void*f1,void*f2,vector<void*>T1,vector<void*>T2){
+	if(f1==NULL||f2==NULL){return 0;}
 	stud*ta=(stud*)f1;
 	stud*tb=(stud*)f2;
 
@@ -27,15 +21,23 @@ void hitt(void*f1,void*f2,vector<void*>T1,vector<void*>T2){
 	for(auto y:T2){
 		if(y!=NULL){t2.push_back((stud*)y);}
 	}
-	int sit1=(*ta).before_att(tb,sbj_teacher,t1,t2);
-	int sit2=(*tb).on_before_be_atted(ta,sbj_teacher,t2,t1);
+	Return_Hit sit1=(*ta).before_att(tb,sbj_teacher,t1,t2);
+	Return_BeHit sit2=(*tb).on_before_be_atted(ta,sbj_teacher,t2,t1);
 
-	if(sit1==1||sit2==1){
+	if(sit1.onf[2]==1){
+		if((rand()%100)*1.0/100<=sit1.opp_cace){
 		if(debug_on){logPrint(12,"  -> Attack cancelled!\n");}
-		return;
+		return 0;	
+		}
+	}
+	if(sit2.onf[2]==1){
+		if((rand()%100)*1.0/100<=sit2.opp_cace){
+		if(debug_on){logPrint(12,"  -> Attack cancelled!\n");}
+		return 0;	
+		}
 	}
 
-	// 最终攻击 - 使用新版 getter
+
 	int final_att=ta->get_att()*tb->get_be_att_mul();
 	if(ta->id==5&&final_att>30){unlockChallenge(2);}
 
@@ -50,15 +52,14 @@ void hitt(void*f1,void*f2,vector<void*>T1,vector<void*>T2){
 		logPrint(7,"    Raw Damage: %d\n",final_att);
 	}
 
-	if(sit1==5||sit2==5){
-		int old_final=final_att;
-		final_att*=0.3;
-		logPrint(12,"    Damage reduced 70%.\n");
-	}else if(sit1!=2&&sit2!=2){
+	if(1){
 		int old_final=final_att,damCap=30;
 		if(ta->id==9&&((stud_A9*)ta)->firstTurnA9){damCap=40;}
-		if(sit1==4||sit2==4){damCap=18;}
-		if(sit1==3||sit2==3){damCap=10;}
+		
+		if(sit1.onf[1]&&sit2.onf[1])damCap=min(sit1.lim_hurt,sit2.lim_hurt);
+		else if(sit1.onf[1]&&!sit2.onf[1])damCap=sit1.lim_hurt;
+		else if(!sit1.onf[1]&&sit2.onf[1])damCap=sit2.lim_hurt;
+		
 		final_att=min(final_att,damCap);
 		if(debug_on&&old_final>damCap){logPrint(12,"    Damage capped to %d.\n",damCap);}
 	}
@@ -107,7 +108,7 @@ tb->name.c_str(),healer->name.c_str(),healAmount);}
 		if(debug_on){logPrint(12,"[English B] Scapegoat %s takes damage instead of %s\n",
 scapegoat->name.c_str(),tb->name.c_str());}
 		scapegoat->cred(-final_att);
-		return;
+		return 0;
 	}
 
 	// 语文课卡片
@@ -116,7 +117,7 @@ scapegoat->name.c_str(),tb->name.c_str());}
 		int fr=rand()%100;
 		if(fr<20){
 			if(debug_on){logPrint(12,"[Chinese Class] Forgive Card: Attack nullified!\n");}
-			return;
+			return 0;
 		}
 		else if(fr<70){
 			final_att=final_att*0.6;
@@ -129,20 +130,57 @@ scapegoat->name.c_str(),tb->name.c_str());}
 		if(debug_on){logPrint(12,"[Chinese Class] Pass Card: Attacker takes 20%% (%d) self damage.\n",passDamage);}
 	}
 
-	int old_red=tb->red;
-	(*tb).cred(final_att*-1);
-	(*ta).cwhite(-5);
-	if(tb->Bighuocar){
-		int A7rand=rand()%5;
-		if(A7rand==1){ta->cred(-final_att);}
-	}
-	if(debug_on){
-		logPrint(7,"  Result:\n");
-		logPrint(12,"    %s HP: %d -> %d ( -%d )\n",tb->name.c_str(),old_red,tb->red,final_att);
-		logPrint(7,"  Stamina Cost:\n");
-		logPrint(15,"    %s Stamina: %d -> %d ( -5 )\n",ta->name.c_str(),ta->white+5,ta->white);
+	if(tb->def > 0){
+		int abhit=min(tb->def,final_att);
+		tb->def-=abhit;
+		final_att=0;
+		if(debug_on){
+			logPrint(7,"  Shield Absorption:\n");
+			logPrint(7,"    Target DEF: %d\n",tb->def+abhit);
+			logPrint(7,"    Absorbed: %d\n",abhit);
+			logPrint(7,"    Remaining Damage: 0\n");
+		}
 	}
 
+	int old_red=tb->red;
+	if(sit1.onf[4]){
+		double PC=sit1.pc_takplac;
+		stud* Fp=(stud*)sit1.takplacer;
+		(*tb).cred(final_att*-1*(1.0-PC));
+		(*Fp).cred(final_att*-1*PC);
+		if(PC>=0.5)(*Fp).cred(final_att*-1*PC);
+	}else if(sit2.onf[4]){
+		double PC=sit2.pc_takplac;
+		stud* Fp=(stud*)sit2.takplacer;
+		(*tb).cred(final_att*-1*(1.0-PC));
+		(*Fp).cred(final_att*-1*PC);
+		if(PC>=0.5)(*Fp).cred(final_att*-1*PC);
+	}else{(*tb).cred(final_att*-1);}
+	
+	if(sit1.onf[3]){
+		double spd=sit1.pc_spread;
+		for(auto y:T2){
+			stud* x=(stud*)y;
+			(*x).cred(final_att*spd*(-1));
+		}
+	}
+	if(sit2.onf[3]){
+		double spd=sit2.pc_spread;
+		for(auto y:T2){
+			stud* x=(stud*)y;
+			(*x).cred(final_att*spd*(-1));
+		}
+	}
+	(*ta).cwhite(-5);
+	if(sit1.onf[5]){
+		double bac=sit1.opp_back;
+		(*ta).cred(final_att*bac*(-1));
+		
+	}
+	if(sit2.onf[5]){
+		double bac=sit2.opp_back;
+		(*ta).cred(final_att*bac*(-1));
+	}
 	(*ta).after_att(tb,sbj_teacher,t1,t2);
 	(*tb).on_minus_red(ta,sbj_teacher,t2,t1);
 
@@ -156,9 +194,10 @@ scapegoat->name.c_str(),tb->name.c_str());}
 		}
 	}
 	if(debug_on){logPrint(7,"\n");}
+
+	return final_att;
 }
 
-// ========== 主动技能 ==========
 void sk_hitt(void*f1,void*f2,vector<void*>T1,vector<void*>T2){
 	if(f1==NULL||f2==NULL){return;}
 	vector<stud*>t1,t2;
@@ -168,11 +207,109 @@ void sk_hitt(void*f1,void*f2,vector<void*>T1,vector<void*>T2){
 	for(auto y:T2){
 		if(y!=NULL){t2.push_back((stud*)y);}
 	}
+	stud* fighter=(stud*)f1;
+	stud* target=(stud*)f2;
+	Return_Hit sit1=(*fighter).before_att(target,sbj_teacher,t1,t2);
+	Return_BeHit sit2=(*target).on_before_be_atted(fighter,sbj_teacher,t2,t1);
 	((stud*)f1)->skhit((stud*)f2,sbj_teacher,t1,t2);
+	(*fighter).after_att(target,sbj_teacher,t1,t2);
+	(*target).on_minus_red(fighter,sbj_teacher,t2,t1);
 	return;
 }
 
-// ========== 状态检查 ==========
+int toge_fight(pair<int,int> WandC,pair<stud*,stud*>FandT,vector<stud*> team,vector<stud*>beside_team){
+	int classs=WandC.second,withid=WandC.first;
+	stud *fighter=FandT.first,*target=FandT.second;
+	vector<int> links=link_check[withid];
+	int mans=0;
+	for(auto y:team)
+		for(auto z:links)
+			if((*y).id==z)mans++;
+	if(mans<=1)return -1;	
+	
+	switch(withid){
+		case 0://B7B8B11
+			if(mans==2){
+				int tot=0;
+				for(auto y:beside_team){
+					if((*y).id>13)(*y).att_mul.push_back({0,1}),(*y).blue_mul.push_back({1.25,3}),(*y).cwhite(-10);
+					(*y).blue_mul.push_back({1.25,3});
+					tot+=(*y).blue;
+				}
+				for(auto y:team){
+					for(auto z:links){
+						if((*y).id==z){
+							(*y).blue+=tot/2*mans;
+						}
+					}
+				}
+				(*fighter).att-=1;
+			}
+			else if(mans==3){
+				int tot=0;
+				for(auto y:beside_team){
+					if((*y).id>13)(*y).att_mul.push_back({-1,1}),(*y).blue_mul.push_back({1.5,3}),(*y).cwhite(-30);
+					else (*y).att_mul.push_back({0.5,1});
+					(*y).blue_mul.push_back({1.5,3});
+					tot+=(*y).blue;
+				}
+				for(auto y:team){
+					for(auto z:links){
+						if((*y).id==z){
+							(*y).blue+=tot*mans;
+						}
+					}
+				}
+				(*fighter).att-=1;
+			}
+			if(classs==4){
+				for(auto y:team){
+					if((*y).id>13)(*y).cwhite(-20);
+				}
+			}
+			break;
+		case 1://A12A13
+			for(auto y:team)
+				for(auto z:links)
+					if((*y).id==z&&(*y).id!=(*fighter).id)(*fighter).tmp_att_plus.push_back({(*y).att,1});
+			if(classs==2){
+				for(auto y:team)
+					for(auto z:links)
+						if((*y).id==z){
+							(*y).cred(10);
+							(*y).cwhite(10);
+							(*y).cblue(10);
+						}
+				(*fighter).cred(10);
+				(*fighter).cwhite(10);
+				(*fighter).cblue(10);
+			}else{
+				for(auto y:team)
+					for(auto z:links)
+						if((*y).id==z){
+							(*y).cred(5);
+							(*y).cwhite(5);
+							(*y).cblue(5);
+						}
+				(*fighter).cred(5);
+				(*fighter).cwhite(5);
+				(*fighter).cblue(5);
+			}
+			break;
+			
+	}
+	Return_Hit sit1=(*fighter).before_att(target,classs,team,beside_team);
+	Return_BeHit sit2=(*target).on_before_be_atted(fighter,classs,beside_team,team);
+	int final_att=fighter->get_att()*target->get_be_att_mul();
+	if(withid==1)final_att=max(final_att,11);
+	(*target).cred(final_att*-1);
+	(*fighter).cwhite(-5);
+	(*fighter).after_att(target,classs,team,beside_team);
+	(*target).on_minus_red(fighter,classs,beside_team,team);
+	
+	return withid;
+}
+
 static void checkIN(stuV&team){
 	for(auto*s:team){
 		if(s&&s->blue<0&&!s->is_crazy){
@@ -217,13 +354,22 @@ static void checkCL(stuV&team){
 	}
 }
 
-// ========== 回合开始/结束 ==========
 static void startTurn(stuV&teamA,stuV&teamB,int tchID){
 	for(auto*s:teamA){
 		if(s){s->on_turn_start(0,tchID,teamA,teamB);}
 	}
 	for(auto*s:teamB){
 		if(s){s->on_turn_start(0,tchID,teamB,teamA);}
+	}
+	for(auto x:teamA){
+		if((*x).id>100)continue;
+		if((*x).HavCt[0]&&(*x).HavCt[1]&&(*x).HavCt[2])
+			hav_full_cts[(*x).id]=1;
+	}
+	for(auto x:teamB){
+		if((*x).id>100)continue;
+		if((*x).HavCt[0]&&(*x).HavCt[1]&&(*x).HavCt[2])
+			hav_full_cts[(*x).id]=1;
 	}
 	if(debug_on){
 		for(auto*s:teamA){
@@ -246,7 +392,6 @@ static void endTurn(stuV&teamA,stuV&teamB,int tchID){
 	}
 }
 
-// ========== 战斗结束检查 ==========
 static bool endBattle(stuV&teamA,stuV&teamB){
 	bool aHasAlive=0,bHasAlive=0;
 	for(auto*s:teamA){
@@ -270,7 +415,6 @@ static bool endBattle(stuV&teamA,stuV&teamB){
 	return 0;
 }
 
-// ========== 选择攻击方 ==========
 static stud*selAtt(stuV&team,const string&teamN,int startL){
 	int size=team.size();
 	int attIdx=0;
@@ -288,17 +432,23 @@ static stud*selAtt(stuV&team,const string&teamN,int startL){
 		gotoxy(0,startL+i);
 		if(!isalive[s->id]||s->red<0){
 			color(8);
-			printf("   %s (DEAD)                    \n",s->name.c_str());
+			printf("   %s (DEAD)                      \n",s->name.c_str());
 			color(7);
 			continue;
 		}
+        if(!s->can_act){
+            color(8);
+            printf("   %s (DISABLED)                  \n",s->name.c_str());
+            color(7);
+            continue;
+        }
 		if(i==attIdx){
 			color(14);
 			printf("-> ");
 		}else{printf("   ");}
 		if(s->status==-1){
 			color(8);
-			printf("%s (EXHAUSTED)                    \n",s->name.c_str());
+			printf("%s (EXHAUSTED)                   \n",s->name.c_str());
 		}else if(s->is_crazy){
 			color(12);
 			printf("%s (ATT:%02d)                    \n",s->name.c_str(),s->get_att());
@@ -319,7 +469,7 @@ static stud*selAtt(stuV&team,const string&teamN,int startL){
 				newIdx--;
 				if(newIdx<0){newIdx=size-1;}
 			}while(newIdx!=attIdx&&(!team[newIdx]||!isalive[team[newIdx]->id]||
-				team[newIdx]->status==-1||team[newIdx]->red<0));
+            team[newIdx]->status==-1||team[newIdx]->red<0||!team[newIdx]->can_act));
 			if(newIdx!=attIdx){
 				gotoxy(0,startL+attIdx);
 				printf("   ");
@@ -335,7 +485,7 @@ static stud*selAtt(stuV&team,const string&teamN,int startL){
 				newIdx++;
 				if(newIdx>=size){newIdx=0;}
 			}while(newIdx!=attIdx&&(!team[newIdx]||!isalive[team[newIdx]->id]||
-				team[newIdx]->status==-1||team[newIdx]->red<0));
+            team[newIdx]->status==-1||team[newIdx]->red<0||!team[newIdx]->can_act));
 			if(newIdx!=attIdx){
 				gotoxy(0,startL+attIdx);
 				printf("   ");
@@ -351,8 +501,8 @@ static stud*selAtt(stuV&team,const string&teamN,int startL){
 	}
 }
 
-// ========== 选择受击方 ==========
 static stud*selTar(stud* atter,stuV& defer,const string& teamN,int startL){
+	int size=defer.size(),tarIdx=0;
 	// 疯人状态：随机选择
 	if(atter->is_crazy){
 		stuV allTar;
@@ -364,7 +514,7 @@ static stud*selTar(stud* atter,stuV& defer,const string& teamN,int startL){
 		clear_action_area();
 		gotoxy(0,19);
 		color(14);
-		printf("%s - tar selected randomly (INSANE mode):",teamN.c_str());
+		printf("%s - Select your target (W/S keys, Enter to confirm):\n",teamN.c_str());
 		vector<string> INstr;
 		for(int i=0;i<3;i++){
 			string s;
@@ -387,7 +537,42 @@ static stud*selTar(stud* atter,stuV& defer,const string& teamN,int startL){
 				printf("   %s",INstr[i].c_str());
 			}
 		}
-		sslp(0.5);
+		while(1){
+			char key=getch();
+			if(key=='w'||key=='W'){
+				int newIdx=tarIdx;
+				do{
+					newIdx--;
+					if(newIdx<0){newIdx=size-1;}
+				}while(newIdx!=tarIdx&&(!defer[newIdx]||!isalive[defer[newIdx]->id]||defer[newIdx]->red<0));
+				if(newIdx!=tarIdx){
+					gotoxy(0,startL+tarIdx);
+					printf("   ");
+					tarIdx=newIdx;
+					gotoxy(0,startL+tarIdx);
+					color(14);
+					printf("->");
+					color(7);
+				}
+			}else if(key=='s'||key=='S'){
+				int newIdx=tarIdx;
+				do{
+					newIdx++;
+					if(newIdx>=size){newIdx=0;}
+				}while(newIdx!=tarIdx&&(!defer[newIdx]||!isalive[defer[newIdx]->id]||defer[newIdx]->red<0));
+				if(newIdx!=tarIdx){
+					gotoxy(0,startL+tarIdx);
+					printf("   ");
+					tarIdx=newIdx;
+					gotoxy(0,startL+tarIdx);
+					color(14);
+					printf("->");
+					color(7);
+				}
+			}else if(key==13){
+				if(defer[tarIdx]&&isalive[defer[tarIdx]->id]){return defer[tarIdx];}
+			}
+		}
 		gotoxy(0,24);
 		color(12);
 		printf("[INSANE] %s is insane! tar selected randomly!",atter->name.c_str());
@@ -397,8 +582,6 @@ static stud*selTar(stud* atter,stuV& defer,const string& teamN,int startL){
 		return allTar[randIdx];
 	}
 	// 正常选择
-	int size=defer.size();
-	int tarIdx=0;
 	while(tarIdx<size&&(!defer[tarIdx]||!isalive[defer[tarIdx]->id]||defer[tarIdx]->red<0)){tarIdx++;}
 	if(tarIdx>=size){return 0;}
 	clear_action_area();
@@ -472,15 +655,60 @@ static stud*selTar(stud* atter,stuV& defer,const string& teamN,int startL){
 	}
 }
 
-// ========== 选择行动类型 ==========
-static actCho selAct(stud* atter,const string& teamN){
+static actCho selAct(stud* atter, voiV& currentTeam){
 	bool canSk=(atter->white>0&&!atter->ct2.empty()),staeno=1,notused=1,skilled=1;
+	
+	int myLinkId=-1;
+	bool hasLinkPotential=0;
+	
+	for(int i=0;i<lc_cnt;i++){
+		for(int id:link_check[i]){
+			if(atter->id==id){
+				myLinkId=i;
+				break;
+			}
+		}
+		if(myLinkId!=-1){break;}
+	}
+	hasLinkPotential=(myLinkId!=-1);
+	
+	bool allFull=0,allPresent=0,hasLink=0;
+	
+	if(hasLinkPotential){
+		allFull=link_res[myLinkId];
+		for(int id:link_check[myLinkId]){
+			if(hav_full_cts[id]==0){
+				allFull=0;
+				break;
+			}
+		}
+		
+		allPresent=1;
+		for(int id:link_check[myLinkId]){
+			bool found=0;
+			for(auto p:currentTeam){
+				if(p==NULL){continue;}
+				stud* s=(stud*)p;
+				if(s->id==id){
+					found=1;
+					break;
+				}
+			}
+			if(!found){
+				allPresent=0;
+				break;
+			}
+		}
+		
+		hasLink=(atter->WithP>=0);
+	}
+	
 	if(atter->id==12&&((stud_A12*)atter)->ega_used){canSk=notused=0;}
 	if(atter->id==13){canSk=staeno=(atter->white>=atter->white_up*0.7);}
 	if(atter->id==21&&((stud_B8*)atter)->fight_active){canSk=notused=0;}
 	if(atter->id==22){
 		stud_B9*b9=(stud_B9*)atter;
-		if(!atter->white<10){canSk=staeno=0;}
+		if(!(atter->white<10)){canSk=staeno=0;}
 		if(!b9->can_use_this_day(day)){canSk=notused=0;}
 	}
 	if(atter->id==24&&((stud_B11*)atter)->guest_turnsLeft>0){canSk=staeno=0;}
@@ -488,11 +716,15 @@ static actCho selAct(stud* atter,const string& teamN){
 	if(atter->id==26){canSk=staeno=(atter->white>=20);}
 	canSk&=(*atter).HavCt[0];
 	skilled&=(*atter).HavCt[0];
-	int choice=0;
+	
+	int choice=0,max_choice=1;
+	if(hasLinkPotential){max_choice=2;}
+	
 	clear_action_area();
 	gotoxy(0,19);
 	color(14);
-	printf("Choose action (W/S keys, Enter to confirm):");
+	printf("Choose action (W/S to move, Enter to confirm):");
+	
 	while(1){
 		gotoxy(0,20);
 		if(choice==0){
@@ -506,15 +738,16 @@ static actCho selAct(stud* atter,const string& teamN){
 			printf("NORMAL ATTACK");
 		}
 		color(7);
+		
 		gotoxy(0,21);
 		if(choice==1){
 			color(14);
 			printf("-> ");
 			if(!canSk){
 				color(8);
-				if(!skilled){printf("SKILL: %s [Unskilled]",atter->ct2[0].c_str());}
+				if(!skilled){printf("SKILL: %s [Unskilled]",atter->ct2.empty()?"???":atter->ct2[0].c_str());}
 				else if(!notused){printf("SKILL: %s [Used]",atter->ct2[0].c_str());}
-				else{printf("SKILL: %s (Not enough stamina)",atter->ct2.empty()?"NO SKILL":atter->ct2[0].c_str());}
+				else{printf("SKILL: %s (Not enough stamina)",atter->ct2.empty()?"???":atter->ct2[0].c_str());}
 			}else{
 				color(11);
 				printf("SKILL: %s",atter->ct2[0].c_str());
@@ -523,63 +756,153 @@ static actCho selAct(stud* atter,const string& teamN){
 			printf("   ");
 			if(!canSk){
 				color(8);
-				if(!skilled){printf("SKILL: %s [Unskilled]",atter->ct2[0].c_str());}
+				if(!skilled){printf("SKILL: %s [Unskilled]",atter->ct2.empty()?"???":atter->ct2[0].c_str());}
 				else if(!notused){printf("SKILL: %s [Used]",atter->ct2[0].c_str());}
-				else{printf("SKILL: %s (Not enough stamina)",atter->ct2.empty()?"NO SKILL":atter->ct2[0].c_str());}
+				else{printf("SKILL: %s (Not enough stamina)",atter->ct2.empty()?"???":atter->ct2[0].c_str());}
 			}else{
 				color(11);
 				printf("SKILL: %s",atter->ct2[0].c_str());
 			}
 		}
 		color(7);
+		
+		if(hasLinkPotential){
+			gotoxy(0,22);
+			
+			auto getRandomStr=[](int len)->string{
+				string s;
+				for(int i=0;i<len;i++){s+=33+rand()%94;}
+				return s;
+			};
+			
+			string displayText;
+			int textColor=8;
+			bool canLink=0;
+			
+			if(!allFull){
+				string rand1=getRandomStr(4);
+				string rand2=getRandomStr(atter->name.length());
+				string rand3=getRandomStr(9);
+				displayText=rand1+": "+rand2+" ["+rand3+"]";
+				textColor=8;
+				canLink=0;
+			}else if(!hasLink){
+				string rand2=getRandomStr(atter->name.length());
+				displayText="LINK: "+rand2+" [Unskilled]";
+				textColor=8;
+				canLink=0;
+			}else if(!allPresent){
+				displayText="LINK: "+link_ct[myLinkId]+" [Incomplete]";
+				textColor=8;
+				canLink=0;
+			}else{
+				displayText="LINK: "+link_ct[myLinkId];
+				textColor=6;
+				canLink=1;
+			}
+			
+			if(choice==2){
+				color(14);
+				printf("-> ");
+				color(textColor);
+				printf("%s",displayText.c_str());
+			}else{
+				printf("   ");
+				color(textColor);
+				printf("%s",displayText.c_str());
+			}
+			color(7);
+		}
+		
 		char key=getch();
-		if(key=='w'||key=='W'){choice=0;}
-		else if(key=='s'||key=='S'){choice=1;}
-		else if(key==13){
+		if(key=='w'||key=='W'){
+			if(choice>0){choice--;}
+			else{choice=max_choice;}
+		}else if(key=='s'||key=='S'){
+			if(choice<max_choice){choice++;}
+			else{choice=0;}
+		}else if(key==13){
 			if(choice==0){return{0,atter};}
 			if(choice==1&&canSk){return{1,atter};}
+			if(choice==2&&hasLinkPotential&&allFull&&hasLink&&allPresent){return{2,atter};}
 		}
 	}
 }
 
-// ========== 执行攻击 ==========
-static void attExe(stud* atter,stud* tar,stuV& team,stuV&enemy,const actCho& action,int& cntAlive){
-	gotoxy(0,23);
-	if(action.useSk){
-		color(11);
-		printf("[SKILL] %s uses %s!",atter->name.c_str(),atter->ct2[0].c_str());
-	}else{
-		color(10);
-		printf("[ATTACK] %s attacks %s!",atter->name.c_str(),tar->name.c_str());
-	}
+static bool attDis(stud*atter,stud*tar,stuV&team,stuV&enemy,const actCho&action,int&cntAlive){
+	if(atter==NULL||tar==NULL){return 0;}
+    gotoxy(0,24);
+    if(action.useSk==2){
+        color(6);
+        printf("[LINK_SKILL] %s will use %s!",atter->name.c_str(),link_ct[atter->WithP].c_str());
+    }else if(action.useSk==1){
+        color(11);
+        printf("[SKILL] %s will use %s!",atter->name.c_str(),atter->ct2[0].c_str());
+    }else{
+        color(10);
+        printf("[ATTACK] %s will attack %s!",atter->name.c_str(),tar->name.c_str());
+    }
+    color(7);
+    gotoxy(0,25);
+    color(14);
+    printf("Press any key to continue...");
+    getch();
+    clear_action_area();
+	return 1;
+}
+
+static void attExe(stud* atter,stud* tar,stuV& team,stuV& enemy,const actCho& action,int& cntAlive,int loc){
 	color(7);
 	voiV vTeam,vEnemy;
-	for(auto*p:team){vTeam.push_back(p);}
-	for(auto*p:enemy){vEnemy.push_back(p);}
-	if(action.useSk){
+	for(auto* p:team){vTeam.push_back(p);}
+	for(auto* p:enemy){vEnemy.push_back(p);}
+	
+	gotoxy(0,loc);
+	int finat=0;
+	if(action.useSk==1){
 		sk_hitt(atter,tar,vTeam,vEnemy);
+		color(11);
+		printf("[SKILL] %s uses %s to %s!",atter->name.c_str(),atter->ct2[0].c_str(),tar->name.c_str());
+	}else if(action.useSk==2){
+		int classId=classtable[atter->Dtee().first.first][atter->Dtee().first.second];
+		toge_fight({atter->WithP,classId},{atter,tar},team,enemy);
+		color(6);
+		printf("[LINK_SKILL] %s uses %s to %s!",atter->name.c_str(),link_ct[atter->WithP].c_str(),tar->name.c_str());
 	}else{
-		hitt(atter,tar,vTeam,vEnemy);
+		int original_damage=hitt(atter,tar,vTeam,vEnemy);
+		
+		bool hasSilenceBonus=0;
+		int silenceBonus=0;
+		for(auto& bonus:atter->tmp_att_plus){
+			if(bonus.first==10000&&bonus.second>0){
+				hasSilenceBonus=1;
+				silenceBonus=bonus.first;
+				break;
+			}
+		}
+		
+		if(hasSilenceBonus){
+			color(10);
+			printf("[ATTACK] %s attacks %s and deals %d damage!",atter->name.c_str(),tar->name.c_str(),original_damage);
+			gotoxy(0,loc+1);
+			color(13);
+			printf("[Silence Reigns Supreme] +%d damage!!!",silenceBonus);
+			gotoxy(0,loc+2);
+		}else{
+			color(10);
+			printf("[ATTACK] %s attacks %s and deals %d damage!",atter->name.c_str(),tar->name.c_str(),original_damage);
+			gotoxy(0,loc+1);
+		}
 	}
+	
 	if(tar->status==0){
-		gotoxy(0,24);
 		color(12);
 		printf("[DEATH] %s has fallen!",tar->name.c_str());
 		color(7);
 		cntAlive--;
-		gotoxy(0,25);
-		printf("Press any key to continue...");
-		getch();
-	}else{
-		gotoxy(0,25);
-		color(14);
-		printf("Press any key to continue...");
-		getch();
 	}
-	clear_action_area();
 }
 
-// ========== 队伍是否有可行动人员 ==========
 static bool canAct(stuV&team){
 	for(auto*s:team){
 		if(s&&isalive[s->id]&&s->status!=-1&&s->red>=0&&s->can_act){return 1;}
@@ -587,7 +910,6 @@ static bool canAct(stuV&team){
 	return 0;
 }
 
-// ========== 主战斗循环 ==========
 static void turn(int rounds,voiV lA,voiV lB,bool isL){
 	stuV teamA,teamB;
 	for(auto*p:lA){
@@ -613,20 +935,27 @@ static void turn(int rounds,voiV lA,voiV lB,bool isL){
 		color(7);
 		sett(lA,lB,isL?5:3);
 		
+		stud*atter1=NULL;
+		stud*atter2=NULL;
+		stud*tar1=NULL;
+		stud*tar2=NULL;
+		actCho action1={0,NULL};
+		actCho action2={0,NULL};
+		bool ifact1=0,ifact2=0;
+		
 		// Team A 回合
 		if(canAct(teamA)){
 			int startL=20;
-			stud* atter=selAtt(teamA,"Team A",startL);
-			if(atter){
+			atter1=selAtt(teamA,"Team A",startL);
+			if(atter1){
 				int tarLine=isL?startL+teamA.size()-5:startL+teamA.size()-3;
-				stud* tar=selTar(atter,teamB,"Team A",tarLine);
-				if(tar){
-					actCho action=selAct(atter,"Team A");
-					attExe(atter,tar,teamA,teamB,action,Bnum);
+				tar1=selTar(atter1,teamB,"Team A",tarLine);
+				if(tar1){
+					action1=selAct(atter1,lA);
+					ifact1=attDis(atter1,tar1,teamA,teamB,action1,Bnum);
 				}
 			}
 		}
-		if(endBattle(teamA,teamB)){break;}
 		
 		system("cls");
 		color(14);
@@ -639,16 +968,23 @@ static void turn(int rounds,voiV lA,voiV lB,bool isL){
 		// Team B 回合
 		if(canAct(teamB)){
 			int startL=20;
-			stud* atter=selAtt(teamB,"Team B",startL);
-			if(atter){
+			atter2=selAtt(teamB,"Team B",startL);
+			if(atter2){
 				int tarLine=isL?startL+teamB.size()-5:startL+teamB.size()-3;
-				stud* tar=selTar(atter,teamA,"Team B",tarLine);
-				if(tar){
-					actCho action=selAct(atter,"Team B");
-					attExe(atter,tar,teamB,teamA,action,Anum);
+				tar2=selTar(atter2,teamA,"Team B",tarLine);
+				if(tar2){
+					action2=selAct(atter2,lB);
+					ifact2=attDis(atter2,tar2,teamB,teamA,action2,Anum);
 				}
 			}
 		}
+		clear_action_area();
+		if(ifact1){attExe(atter1,tar1,teamA,teamB,action1,Bnum,19);}
+		if(ifact2){attExe(atter2,tar2,teamB,teamA,action2,Anum,22);}
+		gotoxy(0,25);
+		color(14);
+		printf("Press any key to continue...");
+		getch();
 		endTurn(teamA,teamB,tchID);
 	}
 	system("cls");
@@ -656,12 +992,11 @@ static void turn(int rounds,voiV lA,voiV lB,bool isL){
 	color(7);
 }
 
-// ========== fight 函数 ==========
 void fight(int day,int cla){
 	if(day==5&&cla>=7)return;
 	if(cla==8){
 		system("cls");
-		color(11);
+		color(14);
 		printf("+-----------------------------------------------------------+\n");
 		printf("|                  LATE SELF-STUDY HOUR                     |\n");
 		printf("|               8 ROUNDS OF INTENSE BATTLE!                 |\n");
@@ -676,7 +1011,7 @@ void fight(int day,int cla){
 	}
 
 	system("cls");
-	color(11);
+	color(14);
 	printf("\n+-----------------------------------------------------------+\n");
 	printf("|  Class: %s%*s|\n", subj2[classtable[day][cla]].c_str(), 50 - (int)subj2[classtable[day][cla]].length(), " ");
 	printf("|  Subject bonus active! Students with matching attributes  |\n");
@@ -1060,6 +1395,7 @@ void fight(int day,int cla){
 	}
 
 	turn(3,lA,lB,0);
+	applySubjectEnd(classtable[day][cla]);
 
 	// 检查残血/满血通关成就
 	bool allLow=1,allFull=1;
@@ -1095,255 +1431,6 @@ void fight(int day,int cla){
 		tmp=(stud*)stud_list[i];
 		tmp->on_fight_end();
 	}
-}
-
-
-// ========== CVS_game 主游戏循环 ==========
-void CVS_game(){
-	system("cls");
-	init();
-	team_chs();
-
-	// 应用全疯设置
-	if(settings.auto_insane){
-		for(auto x:stud_list){
-			if(x!=NULL){
-				((stud*)x)->blue=-1;
-				if(!((stud*)x)->is_crazy){
-					((stud*)x)->is_crazy=true;
-					((stud*)x)->att_mul.push_back({1.5, 0x7f7f7f7f});
-				}
-			}
-		}
-		color(12);
-		printf("\n[SETTINGS] Auto Insane Mode enabled!\n");
-		color(7);
-		printf("Press any key to continue...");
-		getch();
-	}
-	if(!settings.Ct_Need_Chose){
-		for(auto x:stud_list){
-			if(x!=NULL){
-				for(int i=0;i<3;i++)
-				((stud*)x)->HavCt[i]=1;
-			}
-		}
-	}
-
-	for(day=1;day<=5;day++){
-		for(int i=0;i<stud_list.size();i++){
-			if(stud_list[i]==NULL||!isalive[((stud*)stud_list[i])->id]){continue;}
-			tmp=(stud*)stud_list[i];
-			if(tmp->id==26){
-				((stud_B13*)tmp)->resetDaily();
-				((stud_B13*)tmp)->on_day_start();
-			}
-		}
-
-		for(clas=1;clas<=8;clas++){
-			if(Anum<=0||Bnum<=0){continue;}
-			if(clas==5||clas==8){
-				for(int i=0;i<stud_list.size();i++){
-					if(stud_list[i]==NULL||!isalive[((stud*)stud_list[i])->id]){continue;}
-					tmp=(stud*)(stud_list[i]);
-					(*tmp).cwhite(20);
-				}
-				color(10);
-				printf("\n[MEAL] Meal time! +20 stamina restored!\n");
-				color(7);
-			}
-			for(int i=0;i<stud_list.size();i++){
-				if(stud_list[i]==NULL||!isalive[((stud*)stud_list[i])->id]){continue;}
-				tmp=(stud*)(stud_list[i]);
-				(*tmp).cblue(5);
-			}
-			fight(day,clas);
-			if(clas==2||clas==5||clas==7)Lets_Choose_Ct(listA,listB,1);
-			else if(clas==8)Lets_Choose_Ct(listA,listB,2);
-		}
-		for(int i=0;i<stud_list.size();i++){
-			if(stud_list[i]==NULL||!isalive[((stud*)stud_list[i])->id]){continue;}
-			tmp=(stud*)(stud_list[i]);
-			(*tmp).white=(*tmp).white_up;
-			(*tmp).cblue(20);
-
-			if((*tmp).red<0.2*(*tmp).red_up){(*tmp).red=0.2*(*tmp).red_up;}
-			else{(*tmp).cred(20);}
-		}
-		color(7);
-	}
-
-	if(settings.auto_insane&&(Anum<=0||Bnum<=0)){unlockChallenge(1);}
-
-	system("cls");
-	color(14);
-	printf("\n+========================================================+\n");
-	if((Anum<=0&&Bnum<=0)||(Anum>0&&Bnum>0)){printf("|                        DRAW GAME!                      |\n");}
-	else if(Anum<=0){printf("|                     TEAM B VICTORY!                    |\n");}
-	else if(Bnum<=0){printf("|                     TEAM A VICTORY!                    |\n");}
-	printf("+========================================================+\n\nPress any key to continue...");
-	color(7);
-	getch();
-}
-
-// ========== CVS_main 主菜单 ==========
-void CVS_main(){
-	srand(time(nullptr)*rand());
-
-	HANDLE hConsole=GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_CURSOR_INFO cursorInfo;
-	GetConsoleCursorInfo(hConsole,&cursorInfo);
-	cursorInfo.bVisible=0;
-	SetConsoleCursorInfo(hConsole,&cursorInfo);
-	setConsoleSize(80,33);
-
-    loadSettings();
-    if(settings.debug_log) {
-        debug_on=1;
-        createLogWindow();
-    }
-	loadAch();
-	
-start:
-	reset();
-
-	color(7);
-	system("cls");
-	color(11);
-	printf("\
-+------------------------+\n\
-|   Class vs. Students   |\n\
-|           v0.3 rc-4.3  |\n\
-+------------------------+\n");
-	color(7);
-	printf("\
-|       Start Game       |\n\
-|        Guidance        |\n\
-|      Achievements      |\n\
-|       Our Github       |\n\
-|        Settings        |\n\
-|          Exit          |\n");
-	color(11);
-	printf("+------------------------+\n\n\n");
-	if(!timeOfStarting){sslp(0.3);}
-	timeOfStarting=1;
-
-	if(!settings.hide_tips){
-		randomTip();
-		showTip();
-	}
-
-	color(14);
-	gotoxy(0,nowy);
-	printf("| ->");
-	char cstart=getch();
-	while(cstart!='\r'&&cstart!='\n'){
-		gotoxy(0,nowy);
-		color(7);
-		printf("|   ");
-		if(nowy>4&&(cstart=='w'||cstart=='W')){nowy--;}
-		else if(nowy<9&&(cstart=='s'||cstart=='S')){nowy++;}
-		color(14);
-		gotoxy(0,nowy);
-		printf("| ->");
-		cstart=getch();
-	}
-	if(nowy==5){
-		guide();
-		goto start;
-	}
-	else if(nowy==6){
-		achievementMenu();
-		goto start;
-	}
-	else if(nowy==7){
-		system("start https://github.com/cso666/Class-vs-Students");
-		goto start;
-	}
-    else if(nowy==8){
-        settingsMenu();
-        goto start;
-    }
-	else if(nowy==9){
-		gotoxy(11,9);
-		ppput("BYE!",0.2);
-		gotoxy(0,14);
-
-		color(7);
-		cursorInfo.bVisible=1;
-		SetConsoleCursorInfo(hConsole,&cursorInfo);
-		closeLogWindow();
-		return;
-	}
-
-	system("cls");
-
-	color(11);
-	printf("\
-+------------------------+\n\
-|     Are you ready?     |\n\
-+------------------------+\n");
-	color(7);
-	printf("\
-|    YES, Let's go!!!    |\n\
-|           NO           |\n");
-	color(11);
-	printf("+------------------------+");
-	sslp(0.3);
-	gotoxy(0,3);
-	color(14);
-	printf("| ->");
-	color(7);
-	char cnextt=getch();bool starttttt=0;
-	while(cnextt!='\r'&&cnextt!='\n'){
-		if(starttttt==1&&(cnextt=='w'||cnextt=='W')){
-			gotoxy(0,4);
-			color(7);
-			printf("|   ");
-			gotoxy(0,3);
-			color(14);
-			printf("| ->");
-			starttttt=0;
-			color(7);
-		}
-		else if(starttttt==0&&(cnextt=='s'||cnextt=='S')){
-			gotoxy(0,3);
-			color(7);
-			printf("|   ");
-			gotoxy(0,4);
-			color(14);
-			printf("| ->");
-			starttttt=1;
-			color(7);
-		}
-		cnextt=getch();
-	}
-	if(starttttt){
-		color(7);
-		gotoxy(0,3);
-		printf("|                        |\n|                        |");
-		gotoxy(5,3);
-		ppput("It seems you're ",0.05);
-		gotoxy(6,4);
-		ppput("not ready yet.",0.05);
-		sslp(0.4);
-		system("cls");
-		goto start;
-		return;
-	}
-	color(7);
-	gotoxy(0,3);
-	printf("|                        |\n|                        |");
-	gotoxy(10,3);
-	ppput("READY?",0.2);
-	sslp(1);
-	system("cls");
-	gotoxy(11,3);
-	printf("GO!!");
-	sslp(1.5);
-    
-	CVS_game();
-    goto start;
 }
 
 #endif// __FIGHT_H__

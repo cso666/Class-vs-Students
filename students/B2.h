@@ -15,24 +15,27 @@ class stud_B2:public stud{
 			name="B02";
 		}
 		
-		int before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::before_att(target,teach,team,beside_team);
+		Return_Hit before_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_Hit return_num=stud::before_att(target,teach,team,beside_team);
 			return return_num;
 		}
 		
 		void after_att(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::after_att(target,teach,team,beside_team);	
-			if(HavCt[2])if(!isalive[target -> id]){
+			if(HavCt[2]){
+			if(!isalive[target -> id]){
 				for(auto x:beside_team){x->cred((x->red)*0.08);}
-			}		
+			}}		
 		}
 		
-		int on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
-			int return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
-			int fs=(*target).get_att()*get_be_att_mul();
-			if(HavCt[1])if(fs>=0.4*red&&rand()%20<=6){
+		Return_BeHit on_before_be_atted(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			Return_BeHit return_num=stud::on_before_be_atted(target,teach,team,beside_team);	
+			if(HavCt[1]){
+			if(rand()%20<=6){
 				cwhite(-12);
-			    return 5;
+			    be_att_mul.push_back({0.3,1});
+			    
+			}else return_num.update(pair<int,pair<double,int>>{5,{0.6,0}}); 
 			}
 			return return_num;		
 		}
@@ -45,10 +48,5 @@ class stud_B2:public stud{
 		
 		void on_minus_red(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::on_minus_red(target,teach,team,beside_team);	
-			int fs=(*target).get_att()*get_be_att_mul();
-			if(HavCt[1])if(fs>=0.4*red&&rand()%20<=6){
-				fs*=0.60;
-				target -> cred(-fs);
-			}
 		}
 };
