@@ -32,7 +32,14 @@ void CVS_game(){
 			}
 		}
 	}
-
+	//当应用武器时初始化
+	if(settings.attack_with_weapon){
+		TAweapon.clear();
+		TBweapon.clear();
+		TAweapon.push_back(&EMPTY);
+		TBweapon.push_back(&EMPTY);
+		reset_every_weapon();
+	}
 	for(day=1;day<=5;day++){
 		for(int i=0;i<stud_list.size();i++){
 			if(stud_list[i]==NULL||!isalive[((stud*)stud_list[i])->id]){continue;}
@@ -56,6 +63,21 @@ void CVS_game(){
 				color(10);
 				printf("\n[MEAL] Meal time! +20 stamina restored!\n");
 				color(7);
+				if(settings.attack_with_weapon){
+					weapon* new_weapon=get_rand_weapon();
+					if(new_weapon->id!=0){
+						if(rand()%2==0){
+							TAweapon.push_back(new_weapon);
+							printf("\n[WEAPON] Team A got weapon [%s]!\n",new_weapon->name.c_str());
+						}
+						else{
+							TBweapon.push_back(new_weapon);
+							printf("\n[WEAPON] Team B got weapon [%s]!\n",new_weapon -> name.c_str());
+						}
+					}
+				}
+				printf("\nPress any key to continue...\n");
+				getch();
 			}
 			for(int i=0;i<stud_list.size();i++){
 				if(stud_list[i]==NULL||!isalive[((stud*)stud_list[i])->id]){continue;}
@@ -70,6 +92,16 @@ void CVS_game(){
 				if(clas==1||clas==2||clas==3||clas==4)Lets_Choose_Ct(listA,listB,1);
 				else if(clas==8)Lets_Choose_Ct(listA,listB,2);
 			}
+			if(settings.attack_with_weapon){
+				vector<stud*>tmpA,tmpB;
+				for(auto x:listA){
+					tmpA.push_back((stud*)x);
+				}
+				for(auto x:listB){
+					tmpB.push_back((stud*)x);
+				}
+				change_weapon(tmpA,tmpB);
+			}
 		}
 		for(int i=0;i<stud_list.size();i++){
 			if(stud_list[i]==NULL||!isalive[((stud*)stud_list[i])->id]){continue;}
@@ -81,6 +113,7 @@ void CVS_game(){
 			else{(*tmp).cred(20);}
 		}
 		color(7);
+
 	}
 
 	if(settings.auto_insane&&(Anum<=0||Bnum<=0)){unlockChallenge(1);}
@@ -100,13 +133,28 @@ int nowy=4;
 bool timeOfStarting=0;
 
 void clear_action_area(){
-	for(int i=19;i<=26;i++){
+	for(int i=19+2*settings.attack_with_weapon;i<=26+2*settings.attack_with_weapon;i++){
 		gotoxy(0,i);
 		for(int j=0;j<80;j++){printf(" ");}
 	}
 }
 
 void startASCIIart(){
+	gotoxy(0,5);
+	ppput("--------------->",0.1);
+	for(int i=0;i<10;i++){
+		gotoxy(7,i);
+		if(i!=5&&i!=0)printf("|");
+		else if(i==0) printf("^");
+		else printf("+");
+		sslp(0.1);
+	}
+	gotoxy(0,4);
+	ppput("Floiyd",0.15);
+	gotoxy(8,6);
+	ppput("Studios",0.15);
+	sslp(2);
+	system("cls");
 	printf("\
        _\n\
       / \n\
@@ -160,7 +208,7 @@ void CVS_main(){
 	GetConsoleCursorInfo(hConsole,&cursorInfo);
 	cursorInfo.bVisible=0;
 	SetConsoleCursorInfo(hConsole,&cursorInfo);
-	setConsoleSize(80,33);
+	setConsoleSize(80,37);
 
 	_mkdir("saves");
     loadSettings();
@@ -169,7 +217,8 @@ void CVS_main(){
         createLogWindow();
     }
 	loadAch();
-	//startASCIIart();
+
+	startASCIIart();
 	
 start:
 	reset();

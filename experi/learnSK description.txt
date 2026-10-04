@@ -1,0 +1,41 @@
+鉴于我们的字符画师JSGF有着异(yue)常(deng)优(yu)秀(ling)的语言组织能力，我就在这里把各种词条（除个人的，个人词条请它自己翻代码）的描述写出来了：
+
+$\color{green}普通词条$：
+1.Red Up（红值回复）
+your teammembers'HP+=20
+2.Blue Up（蓝值回复）
+your teammembers'SAN+=20
+3.White Up（白值回复）
+your teammembers'STA+=20
+4.Red_Mul Up
+next 9 turns,your teammembers will takes 1.25x damage when the HP increase,and will takes 0.8x damage when it reduce.
+5.Blue_Mul Up
+next 9 turns,your teammembers will takes 1.25x damage when the SAN increase,and will takes 0.8x damage when it reduce.
+6.White_Mul Up
+next 9 turns,your teammembers will takes 1.25x damage when the STA increase,and will takes 0.8x damage when it reduce.
+7.Att Up
+your teammembers will get 3 extra att for next 6 turns
+8.Powerer hit
+next 6 turns,your teammebers will takes 1.25x damamge when they hit people
+9.Harmful hit
+next 6 turns,your enemies will takes 1.25x damamge when they are hitten by people
+10.Comfort One
+Choose one people in your team randly,and let his HP/SAN/STA all +5
+11.Destory One
+Choose one people in your enemies'team randly,and let his HP/SAN/STA all -5
+12.More Red Up
+your teammembers'HP limit+=20
+13.More Blue Up
+14.More White Up
+15.OldDoors'Growth
+next 9 turns,your teammebers will takes (1+0.2*the number of OldDoors in your team)x damamge when they hit people
+16.Song of Bravery
+Choose one people in your team randly,and let his HP/SAN/STA limit all /=2,but he will get 20 extra att forever!
+17.Wider hitt
+next 6 turns,when your teammembers hit people,the other people in the target's team get 0.2x final hurt
+18.Life Save Heart
+your teammembers'DEF+=15(not 20)
+19.Wear Hard ans Sharp
+your teammembers will reflect 35% damage hurt back when they get hurt next 6 turns
+20.As fast As wind
+your teammembers will hav 30% chance to nullify incoming attacks

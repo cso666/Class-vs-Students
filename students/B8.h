@@ -49,6 +49,7 @@ class stud_B8:public stud{
 				att_mul.push_back({0.7,0});
 				be_att_mul.push_back({1.4,0});
 				ifai=1;
+				for(auto y:team)(*y).def+=10;
 			}}
 			if(HavCt[2]){
 			for(auto y:beside_team){
@@ -65,7 +66,7 @@ class stud_B8:public stud{
 			if(fight_active){
 				// 每回合 +2 HP
 				cred(2);
-				
+				def+=5;
 				fight_turnsLeft--;
 				if(debug_on){logPrint(10,"[B08] WantFight? active: +2 HP, turns left: %d\n",fight_turnsLeft);}
 				
@@ -107,8 +108,8 @@ WantFight? used on %s! -15 SAN, target not listening.\n",target->name.c_str());}
 			fight_active=1;
 			fight_turnsLeft=3;
 			// 3回合 att +3
-			tmp_att_plus.push_back({3,3});
+			tmp_att_plus.push_back({5,3});
 			
-			if(debug_on){logPrint(10,"[B08] WantFight? active for 3 turns! +3 ATK, +2 HP/turn.\n");}
+			if(debug_on){logPrint(10,"[B08] WantFight? active for 3 turns! +5 ATK, +2 HP/turn.\n");}
 		}
 };

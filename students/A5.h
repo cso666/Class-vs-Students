@@ -67,8 +67,10 @@ class stud_A5:public stud{
 			target -> cred(-25);
 			int zhanshaxian=5+rand()%(26-outx*5);
 			if((*target).red*1.0/(*target).red_up<=zhanshaxian/100.0){
-				(*target).cred(-999);
+				(*target).red=-1;
+				(*target).cred(-1);
 				outx++;
+				cwhite(-40);
 			}
 		}
 };

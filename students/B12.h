@@ -7,6 +7,7 @@ public:
 	bool shake_active=0;  // 从A0移入
 	int hurt_cnt=0;
 	stud_B12(){
+		def=0;
 		have_dead=0;
 		red_up-=4,blue_up-=0,white_up+=40;
 		red=red_up,blue=blue_up,white=white_up;
@@ -26,7 +27,7 @@ public:
 		int diff=white-target->white;
 		if(HavCt[1]){
 			cwhite(5);
-			cwhite(diff/3);
+			cwhite(min(diff/3,50));
 			if(debug_on){
 				logPrint(10,"[B12] HitPlane: white diff=%d, adjusted STA by %d\n",diff,diff/3);
 			}	

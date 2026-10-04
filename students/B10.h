@@ -7,7 +7,7 @@ class stud_B10:public stud{
 		stud_B10(){
 			red_up-=4,blue_up-=20,white_up-=2;
 			red=red_up,blue=blue_up,white=white_up;
-			att-=3;
+			att+=2;
 			ct1.pb("Subjective!!");
 			ct1.pb("Shouldn't...");
 			ct2.pb("UnforeseenDisaster");
@@ -57,12 +57,12 @@ class stud_B10:public stud{
 				cnt_x=0;
 				for(auto y:team){cnt_x+=(*y).status==0;}
 				for(auto y:beside_team){cnt_x+=(*y).status==0;}
-				att_mul[0].first*=1+0.4*cnt_x;
-				be_att_mul[0].first*=1+0.4*cnt_x;
+				att_mul.push_back({1+0.4*cnt_x,0});
+				be_att_mul.push_back({1+0.4*cnt_x,0});
 				
 				if(HavCt[2])if(is_crazy){
-					for(auto y:beside_team){(*y).cred(5*get_att());}
-					cwhite(0.9*white);
+					for(auto y:beside_team){(*y).cred(2.5*get_att());}
+					cwhite(-0.45*white);
 				}	
 			}
 			

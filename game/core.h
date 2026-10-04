@@ -38,21 +38,22 @@ string subj2[13+10];//学科
 vector<void*>stud_list;
 vector<void*>listA,listB;
 int Anum=5,Bnum=5;
-int day,clas;
+int day,clas,tur;
 bool isalive[135];
 
 bool hav_full_cts[35]={0};
 string normal_ct[100]={"Red Up","Blue Up","White Up","Red_Mul Up","Blue_Mul Up","White_Mul Up","Att Up","Powerer hit","Harmful hit","Comfort One","Destory One",
-"More RedUp","More BlueUp","More WhiteUp","OldDoors'Growth","Song of Bravery","Wider hitt",};
+"More RedUp","More BlueUp","More WhiteUp","OldDoors'Growth","Song of Bravery","Wider hitt",
+"Life Save Heart","Wear Hard and Sharp","As Fast As Wind","Can't Reach","Use Jing Like Wind","See Ocean feel Sad","Last Speak","Fight Heavily"};
 string rare_ct[100]={"Double Red Mul","Double Blue Mul","Double White Mul","Lets Make Hero","The Scars of War","Silence Reigns Supreme",
-"Life Blazing Spent","Never Giveup"};
+"Life Blazing Spent","Never Giveup","Dun of Century","VeryNB"};
 string link_ct[100]={"Defections!!","Maths STAR!!"};//un deal
 vector<int> link_check[100]={{13+7,13+8,13+11},{12,13}};
 bool link_res[100]={1,1};
 string evolve_ct[100]={"A03->A24","A04->A04-L"};
 vector<int> evolve_check[100]={{3},{4}};
 bool evolve_res[100]={1,1};
-int nc_cnt=17,rc_cnt=8,lc_cnt=2,ec_cnt=2;
+int nc_cnt=25,rc_cnt=10,lc_cnt=2,ec_cnt=2;
 
 // 设置项结构体
 struct GameSettings{
@@ -63,9 +64,10 @@ struct GameSettings{
     bool hide_tips;// 隐藏tips
     bool Ct_Need_Chose;
     bool full_rosters;
+    bool attack_with_weapon;
 };
 // 全局设置实例
-static GameSettings settings={0,0,0,0,0,0};
+static GameSettings settings={0,0,0,0,0,0,0};
 
 // ========== 控制台函数 ==========
 void gotoxy(int x,int y){

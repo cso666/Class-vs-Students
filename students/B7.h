@@ -76,8 +76,9 @@ class stud_B7:public stud{
 			if((double)red/red_up>=0.2){
 				int target_hp=red_up*0.2;
 				cred(target_hp-red);
-				if(turns_left>0){tmp_att_plus.push_back({6, turns_left});}
-				else{tmp_att_plus.push_back({6,1});}
+				if(turns_left>0){tmp_att_plus.push_back({10, turns_left});}
+				else{tmp_att_plus.push_back({10,1});}
+				def+=20;
 				if(debug_on){logPrint(10,"[B07] HP >= 20%%, reduced to 20%%. +6 ATK for %d turns.\n",turns_left);}
 			}else{
 				if((double)blue/blue_up>=0.2){
@@ -89,7 +90,7 @@ class stud_B7:public stud{
 				}else{
 					int target_san=blue_up*0.2;
 					cblue(target_san-blue);
-					att_rt.update(pair<int,pair<int,int>>{3,{0.2,8}});
+					att_rt.update(pair<int,pair<int,int>>{3,{0.2,turns_left}});
 					(*target).cant_act+=3;
 					if(debug_on){logPrint(10,"[B07] SAN < 20%%, restored to 20%%. No bonus.\n");}
 				}

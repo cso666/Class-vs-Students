@@ -2,6 +2,9 @@
 #define __PREGAME_H__
 #define __PREGAME_H_ver__ 12
 
+extern long long get_color_of_weapon(weapon* ptr);
+extern const char* get_weapon_name(weapon* ptr);
+
 bool hasLinkSkill(vector<void*> team){
 	for(int i=0;i<lc_cnt;i++){
 		bool all_condition_met=link_res[i];
@@ -144,6 +147,7 @@ void reset(){
 	t26=stud_B13();
 	t27=stud_B14();
 	t28=stud_B15();
+	t29=stud_DH1();
 }
 
 void init(){
@@ -576,7 +580,7 @@ void sett(vector<void*>lA,vector<void*>lB,const int k){
 				for(int ________i=0;________i<STUDENT_SKILL_WIDTH+1;________i++){printf(" ");}
 			}
 		}
-		if(y.att<=0||is_dead){printf(" --  | ");}
+		if(y.att<=0||is_dead){printf(" XXX   --  | ");}
 		else if(y.espp){
 			color(86);
 			printf(" ");
@@ -678,16 +682,31 @@ void sett(vector<void*>lA,vector<void*>lB,const int k){
 		color(7);
 		printf("| ");
 	}
-
+	
+	if(settings.attack_with_weapon){
+		printf("\n");
+		printf("| ");
+		for(auto x : lA){
+			if(x==NULL)continue;
+			stud* s=(stud*)x;
+			if(s -> wp != NULL){
+				color(get_color_of_weapon(s -> wp));
+				printf("Weapon : [%s]",get_weapon_name(s -> wp));
+				color(7);
+				printf("| ");
+			}
+		}
+	}
+	
 	color(14);
 	if(k==3){printf("\n+%s+\n",string(TEAM_TITLE_WIDTH-2,'-').c_str());}
 	if(k==5){printf("\n+%s+\n",string(TEAM_TITLE_WIDTH_LATE-2,'-').c_str());}
 	color(7);
-	if(k==3){printf("\n%sVS.\n",string(TEAM_TITLE_WIDTH/2-2,' ').c_str());}
-	if(k==5){printf("\n%sVS.\n",string(TEAM_TITLE_WIDTH_LATE/2-2,' ').c_str());}
+	if(k==3){printf("%sVS.",string(TEAM_TITLE_WIDTH/2-2,' ').c_str());}
+	if(k==5){printf("%sVS.",string(TEAM_TITLE_WIDTH_LATE/2-2,' ').c_str());}
 	color(14);
-	if(k==3){printf("+--- Team B %s+\n",string(TEAM_TITLE_WIDTH-13,'-').c_str());}
-	if(k==5){printf("+--- Team B %s+\n",string(TEAM_TITLE_WIDTH_LATE-13,'-').c_str());}
+	if(k==3){printf("\n+--- Team B %s+\n",string(TEAM_TITLE_WIDTH-13,'-').c_str());}
+	if(k==5){printf("\n+--- Team B %s+\n",string(TEAM_TITLE_WIDTH_LATE-13,'-').c_str());}
 	color(7);
 	printf("| ");
 
@@ -733,7 +752,7 @@ void sett(vector<void*>lA,vector<void*>lB,const int k){
 				for(int ________i=0;________i<STUDENT_SKILL_WIDTH+1;________i++){printf(" ");}
 			}
 		}
-		if(y.att<=0||is_dead){printf(" --  | ");}
+		if(y.att<=0||is_dead){printf(" XXX   --  | ");}
 		else if(y.espp){
 			color(86);
 			printf(" ");
@@ -835,7 +854,22 @@ void sett(vector<void*>lA,vector<void*>lB,const int k){
 		color(7);
 		printf("| ");
 	}
-
+	
+	if(settings.attack_with_weapon){
+		printf("\n");
+		printf("| ");
+		for(auto x : lB){
+			if(x==NULL)continue;
+			stud* s=(stud*)x;
+			if(s -> wp != NULL){
+				color(get_color_of_weapon(s -> wp));
+				printf("Weapon : [%s]",get_weapon_name(s -> wp));
+				color(7);
+				printf("| ");
+			}
+		}
+	}
+	
 	color(14);
 	if(k==3){printf("\n+%s+\n",string(TEAM_TITLE_WIDTH-2,'-').c_str());}
 	if(k==5){printf("\n+%s+\n",string(TEAM_TITLE_WIDTH_LATE-2,'-').c_str());}

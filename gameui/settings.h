@@ -72,6 +72,7 @@ void settingsMenu(){
     printf("|    5. Hide Tips                                        |       |\n");
     printf("|    6. Choose & Learn Skills [EXPERIMENTAL]             |       |\n");
     printf("|    7. Full Roster Mode                                 |       |\n");
+    printf("|    8. Attack With Weapon [EXPERIMENTAL]                |       |\n");
     color(11);
     printf("+----------------------------------------------------------------+\n");
     color(4);
@@ -115,6 +116,9 @@ void settingsMenu(){
     gotoxy(onoffx,9);
     if(settings.full_rosters){color(10);printf("[ON] ");}
     else{color(8);printf("[OFF]");}
+    gotoxy(onoffx,10);
+    if(settings.attack_with_weapon){color(10);printf("[ON] ");}
+    else{color(8);printf("[OFF]");}
     color(7);
 
     while(1){
@@ -127,7 +131,7 @@ void settingsMenu(){
             color(14);
             gotoxy(0,nowy);
             printf("| ->");
-        }else if((key=='s'||key=='S')&&nowy<9){
+        }else if((key=='s'||key=='S')&&nowy<10){
             color(7);
             gotoxy(0,nowy);
             printf("|   ");
@@ -215,6 +219,17 @@ void settingsMenu(){
                 saveSettings();
                 gotoxy(onoffx,nowy);
                 if(settings.full_rosters){
+                    color(10);
+                    printf("[ON] ");
+                }else{
+                    color(8);
+                    printf("[OFF]");
+                }
+            }else if(nowy==10){
+                settings.attack_with_weapon=!settings.attack_with_weapon;
+                saveSettings();
+                gotoxy(onoffx,nowy);
+                if(settings.attack_with_weapon){
                     color(10);
                     printf("[ON] ");
                 }else{

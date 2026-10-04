@@ -5,7 +5,6 @@
 #ifndef __stud__
 #define __stud__
 #define __stud_ver__ 27
-
 #include<iostream>
 #include<cstdio>
 #include<cstdlib>
@@ -23,6 +22,22 @@ extern bool debug_on;
 extern void logPrint(int colorCode,const char*format,...);
 extern int day,clas;
 extern int classtable[6][9];
+
+class weapon;
+class wp_empty;
+class wp_pen;
+class wp_ruler;
+class wp_eraser;
+class wp_pencil;
+class wp_cup;
+class wp_book;
+extern wp_empty EMPTY;
+extern wp_pen pen;
+extern wp_ruler ruler;
+extern wp_eraser eraser;
+extern wp_pencil pencil;
+extern wp_cup cup;
+extern wp_book book;
 
 string ppty_name[100]={"占位",
 					   "语表"/*1*/,"数表"/*2*/,"英表A"/*3*/,"英表B"/*4*/,
@@ -180,6 +195,8 @@ struct Return_BeHit{
 class stud{
 	private:
 	public:
+		weapon* wp;
+
 		int tim;
 		
 		bool Bighuocar=0;  // A7用，暂留
@@ -198,6 +215,9 @@ class stud{
 		vector<pair<int,int>> tmp_att_plus;  // 临时攻击力加成 (值, 剩余回合)
 		Return_Hit att_rt;
 		Return_BeHit be_att_rt;
+
+		//每回合结束时的延迟扣血
+		vector<pair<int,int>>on_turn_end_cred;
 		
 		vector<int>py;
 		vector<string>ct1,ct2;
@@ -229,14 +249,11 @@ class stud{
 		// A09全局（给我待在A0！！）
 		bool firstTurnA9=0,fromA9=0;
 		//Ct special change num
-		int RJCS_6,ZJZL_7;
+		int RJCS_6,ZJZL_7,YJRF_21;
 		
 		// 计算当前是第几天第几节课第几回合
 		pair<pair<int,int>,int>Dtee(){
-			int d=tim/26+1;
-			int c=tim%26>21?8:tim%26/3+1;
-			int t=tim-(d-1)*26-(d-1)*26;
-			return {{d,c},t};
+			return {{day,clas},tur};
 		}
 		
 		// 获取当前红条倍率 (sc: 0=增加时, 1=减少时)
@@ -319,7 +336,7 @@ class stud{
 		virtual int cred(int chg){
 			if(chg<0){
 				if(def>0){
-					def-=chg;
+					def+=chg;
 					def=max(def,0);
 				}
 				else red+=chg*get_red_mul(1);
@@ -332,7 +349,7 @@ class stud{
 		virtual int cwhite(int chg){
 			if(chg<0){
 				if(def>0){
-					def-=chg;
+					def+=chg;
 					def=max(def,0);
 				}
 				else white+=chg*get_white_mul(1);
@@ -349,7 +366,7 @@ class stud{
     		/*if(chg<0)*/if(chg<0){
         		if(id==6&&HavCt[2]){chg=0;}
 				if(def>0){
-					def-=chg;
+					def+=chg;
 					def=max(def,0);
 				}
 				else blue+=chg*get_blue_mul(1);
@@ -425,19 +442,32 @@ class stud{
 			}
 		}
 		
-		virtual void on_turn_end(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){;}
+		virtual void on_turn_end(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			for(int i=0;i<on_turn_end_cred.size();i++){
+				if(on_turn_end_cred[i].second<=0) on_turn_end_cred.erase(on_turn_end_cred.begin()+i),i--;
+				else {
+					this->cred(on_turn_end_cred[i].first);
+					on_turn_end_cred[i].second--;
+				}
+			}
+		}
 		virtual void on_day_start(int subject_id){;}
 		virtual void on_fight_end(){;}
 		virtual void on_enemy_death(vector<stud*>&team){;}
 		virtual bool isAway()const{return 0;}
 		virtual void resetDaily(){;}
 		virtual int get_dead_count(bool is_late_night){return 0;}
-		virtual void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){;}
+		virtual void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
+			cwhite(10*YJRF_21);
+		}
 		
 		stud(){
+			wp=(weapon*)&EMPTY;
 			tim=0;
 			red=red_up=blue=blue_up=white=white_up=def_up=100;
+			def=0;
 			// 永久乘区用很大的剩余回合数表示
+			on_turn_end_cred.push_back({0,0x7f7f7f7f});
 			white_mul.push_back({1.0,0x7f7f7f7f});
 			blue_mul.push_back({1.0,0x7f7f7f7f});
 			red_mul.push_back({1.0,0x7f7f7f7f});

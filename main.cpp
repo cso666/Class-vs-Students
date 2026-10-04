@@ -64,6 +64,11 @@
  * [basic_gui/pic.h]
  *   display_pic            - 显示BMP图片
  *
+ * [basic_gui/shape.h]
+ *   draw_line              - 画一条线
+ *   draw_polygon           - 画一个多边形
+ *   draw_circle            - 画一个圆
+ * 
  * [game/fight.h]
  *   hitt                   - 普通攻击
  *   sk_hitt                - 技能攻击
@@ -135,6 +140,7 @@
  * |
  * +---basic_gui
  * |       pic.h
+ * |       shape.h
  * |
  * +---game
  * |       core.h
@@ -188,7 +194,6 @@
  * If you can't, try first click the header's, and click in the header.
  * For example, first CTRL+CLICK `__GAMEUI_H__` and then CTRL_CLICK `guide` in gameui.h.
  */
-
 #include"game/core.h"
 #include"game/subject.h"
 #include"game/pregame.h"
@@ -197,8 +202,10 @@
 #include"gameui/tips.h"
 #include"gameui/guide.h"
 #include"experi/learnsk.h"
+#include"experi/weapon.h"
 #ifdef PICUSE
 #include"basic_gui/pic.h"
+#include"basic_gui/shape.h"
 #endif
 #include"game/fight.h"
 #include"game/cvsmain.h"
@@ -230,8 +237,6 @@ CVS will ignore the redundancies.
 			return 0;
 		}
     }
-	//display_pic("icon.bmp",50,50);
-	//Sleep(10000);
 	CVS_main();
 	return 0;
 }

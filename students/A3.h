@@ -36,15 +36,15 @@ class stud_A3:public stud{
 						tmp++;
 					}
 				}
-				if(tmp==3){
-					(*target).blue=0;
+				if(tmp==3&&isb[(*target).id]&&!((*target).id==13+7&&(*target).HavCt[2])&&!((*target).id==6&&(*target).HavCt[2])){
+					(*target).blue=-1;
+					(*target).cblue(-1);
 					cblue(-20);
 				}
 			}
 			if(HavCt[2]){if(rand()%2){
 				cwhite(-5);
 				cred(5);
-				cwhite(30);
 			}}
 			
 			if(mother[(*target).id]==1){
@@ -73,8 +73,8 @@ class stud_A3:public stud{
 						tmp++;
 					}
 				}
-				if(tmp==3&&isb[(*target).id]){
-					(*target).blue=1;
+				if(tmp==3&&isb[(*target).id]&&!((*target).id==13+7&&(*target).HavCt[2])&&!((*target).id==6&&(*target).HavCt[2])){
+					(*target).blue=-1;
 					(*target).cblue(-1);
 					cblue(-20);
 				}
@@ -101,14 +101,14 @@ class stud_A3:public stud{
 		
 		virtual void skhit(stud* target,int teach,vector<stud*>team,vector<stud*>beside_team){
 			stud::skhit(target,teach,team,beside_team);
+			if((*target).id==13+7&&(*target).HavCt[2])return;
 			cwhite(-5);
-			cblue(-25);
 			target->cred(-5);
 			mother[(*target).id]=1;
 		}
 		
 		virtual void on_day_start(int subject_id){
-			for(int i=0;i<=29;i++)
+			for(int i=0;i<=129;i++)
 				mother[i]=0;
 		}
 };

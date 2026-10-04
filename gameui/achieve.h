@@ -46,7 +46,7 @@ static int ccnt=sizeof(cahv)/sizeof(cahv[0]);
 
 void printAch(const char* prefix,const char* name){
 	color(10);
-	gotoxy(0,32);
+	gotoxy(0,36);
 	printf("[%s] %s",prefix,name);
     gotoxy(0,0);
 	color(7);

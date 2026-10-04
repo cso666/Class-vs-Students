@@ -310,45 +310,45 @@ void Fix_Ct(vector<void*> &team,vector<void*> &beside_team,CtInfo ct){
 			for(auto y:team){
 				stud* x=(stud*)y;
 				if((*x).status==0){continue;}
-				(*x).red_mul_p.push_back({1.25,8});
-				(*x).red_mul.push_back({0.8,8});
+				(*x).red_mul_p.push_back({1.25,9});
+				(*x).red_mul.push_back({0.8,9});
 			}
 		}else if(iiid==4){
 			if(debug_on){logPrint(10,"[Apply Skill] Applied Normal: Blue_Mul Up\n");}
 			for(auto y:team){
 				stud* x=(stud*)y;
 				if((*x).status==0){continue;}
-				(*x).blue_mul_p.push_back({1.25,8});
-				(*x).blue_mul.push_back({0.8,8});
+				(*x).blue_mul_p.push_back({1.25,9});
+				(*x).blue_mul.push_back({0.8,9});
 			}
 		}else if(iiid==5){
 			if(debug_on){logPrint(10,"[Apply Skill] Applied Normal: White_Mul Up\n");}
 			for(auto y:team){
 				stud* x=(stud*)y;
 				if((*x).status==0){continue;}
-				(*x).white_mul_p.push_back({1.25,8});
-				(*x).white_mul.push_back({0.8,8});
+				(*x).white_mul_p.push_back({1.25,9});
+				(*x).white_mul.push_back({0.8,9});
 			}
 		}else if(iiid==6){
 			if(debug_on){logPrint(10,"[Apply Skill] Applied Normal: Att Up\n");}
 			for(auto y:team){
 				stud* x=(stud*)y;
 				if((*x).status==0){continue;}
-				(*x).tmp_att_plus.push_back({3,5});
+				(*x).tmp_att_plus.push_back({3,6});
 			}
 		}else if(iiid==7){
 			if(debug_on){logPrint(10,"[Apply Skill] Applied Normal: Powerer hit\n");}
 			for(auto y:team){
 				stud* x=(stud*)y;
 				if((*x).status==0){continue;}
-				(*x).att_mul.push_back({1.25,5});
+				(*x).att_mul.push_back({1.25,6});
 			}
 		}else if(iiid==8){
 			if(debug_on){logPrint(10,"[Apply Skill] Applied Normal: Harmful hit\n");}
 			for(auto y:beside_team){
 				stud* x=(stud*)y;
 				if((*x).status==0){continue;}
-				(*x).be_att_mul.push_back({1.25,5});
+				(*x).be_att_mul.push_back({1.25,6});
 			}
 		}else if(iiid==9){
 			if(debug_on){logPrint(10,"[Apply Skill] Applied Normal: Comfort One\n");}
@@ -384,21 +384,21 @@ void Fix_Ct(vector<void*> &team,vector<void*> &beside_team,CtInfo ct){
 			for(auto y:team){
 				stud* x=(stud*)y;
 				if((*x).status==0){continue;}
-				(*x).red_up+=5;
+				(*x).red_up+=20;
 			}
 		}else if(iiid==12){
 			if(debug_on){logPrint(10,"[Apply Skill] Applied Normal: More BlueUp\n");}
 			for(auto y:team){
 				stud* x=(stud*)y;
 				if((*x).status==0){continue;}
-				(*x).blue_up+=5;
+				(*x).blue_up+=20;
 			}
 		}else if(iiid==13){
 			if(debug_on){logPrint(10,"[Apply Skill] Applied Normal: More WhiteUp\n");}
 			for(auto y:team){
 				stud* x=(stud*)y;
 				if((*x).status==0){continue;}
-				(*x).white_up+=5;
+				(*x).white_up+=20;
 			}
 		}else if(iiid==14){
 			if(debug_on){logPrint(10,"[Apply Skill] Applied Normal: OldDoors'Growth\n");}
@@ -411,7 +411,7 @@ void Fix_Ct(vector<void*> &team,vector<void*> &beside_team,CtInfo ct){
 			for(auto y:team){
 				stud* x=(stud*)y;
 				if((*x).status==0){continue;}
-				(*x).att_mul.push_back({1+0.2*cnt_od,8});
+				(*x).att_mul.push_back({1+0.2*cnt_od,9});
 			}
 		}else if(iiid==15){
 			if(debug_on){logPrint(10,"[Apply Skill] Applied Normal: Song of Bravery\n");}
@@ -434,7 +434,63 @@ void Fix_Ct(vector<void*> &team,vector<void*> &beside_team,CtInfo ct){
 			for(auto y:team){
 				stud* x=(stud*)y;
 				if((*x).status==0){continue;}
-				(*x).att_rt.update(pair<int,pair<double,int>>{3,{0.2,5}});
+				(*x).att_rt.update(pair<int,pair<double,int>>{3,{0.2,6}});
+			}
+		}else if(iiid==17){
+			for(auto y:team){
+				stud* x=(stud*)y;
+				if((*x).status==0){continue;}
+				(*x).def+=15;
+			}
+		}else if(iiid==18){
+			for(auto y:team){
+				stud* x=(stud*)y;
+				if((*x).status==0){continue;}
+				(*x).be_att_rt.update(pair<int,pair<double,int>>{5,{0.35,6}});
+			}
+		}else if(iiid==19){
+			for(auto y:team){
+				stud* x=(stud*)y;
+				if((*x).status==0){continue;}
+				(*x).be_att_rt.update(pair<int,pair<double,int>>{2,{0.3,6}});
+			}
+		}else if(iiid==20){
+			for(auto y:beside_team){
+				stud* x=(stud*)y;
+				if((*x).status==0){continue;}
+				(*x).att_rt.update(pair<int,pair<double,int>>{2,{0.3,6}});
+			}
+		}else if(iiid==21){
+			for(auto y:team){
+				(*(stud*)y).YJRF_21++;
+			}
+		}else if(iiid==22){
+			int maxatt=-1;
+			for(auto y:team)
+				maxatt=max((*(stud*)y).att,maxatt);
+			
+			for(auto y:beside_team){
+				stud* x=(stud*)y;
+				if((*x).status==0){continue;}
+				(*x).cblue(-3*max(0,maxatt-(*x).att));
+			}
+		}else if(iiid==23){
+			int lesscnt=0;
+			for(auto y:team)
+				lesscnt+=(*(stud*)y).red<=20;
+			
+			for(auto y:team){
+				stud* x=(stud*)y;
+				if((*x).status==0){continue;}
+				(*x).att_mul.push_back({1+0.2*lesscnt,10});
+			}
+		}else if(iiid==24){
+			for(auto y:team){
+				stud* x=(stud*)y;
+				if((*x).status==0){continue;}
+				(*x).def+=30;
+				(*x).tmp_att_plus.push_back({5,9});
+				(*x).white_mul.push_back({1.2,9});
 			}
 		}
 	}
@@ -538,6 +594,18 @@ void Fix_Ct(vector<void*> &team,vector<void*> &beside_team,CtInfo ct){
 				(*(stud*)y).ZJZL_7++;
 				(*(stud*)y).att_rt.update(pair<int,pair<int,int>>{1,{30,0x3f3f3f3f}});
 				if(debug_on){logPrint(10,"[Apply Skill] Never Giveup Spent buffed %s\n",((stud*)team[rand()%5])->name.c_str());}
+			}
+		}else if(iiid==8){
+			for(auto y:team){
+				stud* x=(stud*)y;
+				if((*x).status==0){continue;}
+				(*x).def+=80;
+			}
+		}else if(iiid==9){
+			for(auto y:team){
+				stud* x=(stud*)y;
+				if((*x).status==0){continue;}
+				(*x).att_rt.update(pair<int,pair<double,int>>{1,{50,9}});
 			}
 		}
 	}

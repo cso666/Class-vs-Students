@@ -66,7 +66,8 @@ class stud_B15:public stud{
 					}
 					if(target_enemy){
 						if(max_ratio<=0.15&&rain>0){
-							target_enemy->cred(-target_enemy->red);
+							target_enemy->red=-1;
+							(*target_enemy).cred(-1);
 							rain--;
 							if(debug_on){logPrint(12,"[B15-PefectRain] %s was executed! Rain left: %d\n",target_enemy->name.c_str(),rain);}
 						}else{

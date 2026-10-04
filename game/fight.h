@@ -181,6 +181,9 @@ scapegoat->name.c_str(),tb->name.c_str());}
 		double bac=sit2.opp_back;
 		(*ta).cred(final_att*bac*(-1));
 	}
+	if(settings.attack_with_weapon==true){
+		((stud*)f1) -> wp -> on_using((stud*)f1,(stud*)f2,t1,t2);
+	}
 	(*ta).after_att(tb,sbj_teacher,t1,t2);
 	(*tb).on_minus_red(ta,sbj_teacher,t2,t1);
 
@@ -319,7 +322,7 @@ static void checkIN(stuV&team){
 			if(debug_on){logPrint(12,
 			"[STATUS] %s has gone INSANE! Attack power x1.5!\n",s->name.c_str());}
 			clear_action_area();
-			gotoxy(0,21);
+			gotoxy(0,21+2*settings.attack_with_weapon);
 			color(12);
 			printf("[INSANE] %s has gone insane! Attack power increased by 1.5x!",s->name.c_str());
 			color(7);
@@ -343,7 +346,7 @@ static void checkCL(stuV&team){
 			}
 			if(debug_on){logPrint(10,"[STATUS] %s has calmed down.\n",s->name.c_str());}
 			clear_action_area();
-			gotoxy(0,21);
+			gotoxy(0,21+2*settings.attack_with_weapon);
 			color(10);
 			printf("[CALM] %s has calmed down. Attack power restored.",s->name.c_str());
 			color(7);
@@ -423,7 +426,7 @@ static stud*selAtt(stuV&team,const string&teamN,int startL){
 		team[attIdx]->status==-1||team[attIdx]->red<0||!team[attIdx]->can_act)){attIdx++;}
 	if(attIdx>=size){return 0;}
 	clear_action_area();
-	gotoxy(0,19);
+	gotoxy(0,19+2*settings.attack_with_weapon);
 	color(14);
 	printf("%s - Select your fighter (W/S keys, Enter to confirm):\n",teamN.c_str());
 	for(int i=0;i<size;i++){
@@ -509,10 +512,10 @@ static stud*selTar(stud* atter,stuV& defer,const string& teamN,int startL){
 		for(auto*s:defer){
 			if(s&&isalive[s->id]&&s->red>=0){allTar.push_back(s);}
 		}
-		if(allTar.empty()){return 0;}
+		if(allTar.empty()){return atter;}
 		int randIdx=rand()%allTar.size();
 		clear_action_area();
-		gotoxy(0,19);
+		gotoxy(0,19+2*settings.attack_with_weapon);
 		color(14);
 		printf("%s - Select your target (W/S keys, Enter to confirm):\n",teamN.c_str());
 		vector<string> INstr;
@@ -522,13 +525,13 @@ static stud*selTar(stud* atter,stuV& defer,const string& teamN,int startL){
 			INstr.push_back(s);
 		}
 		for(int i=0;i<3;i++){
-			gotoxy(0,20+i);
+			gotoxy(0,20+2*settings.attack_with_weapon+i);
 			color(12);
 			printf("   %s",INstr[i].c_str());
 		}
 		int INcho=0;
 		for(int i=0;i<3;i++){
-			gotoxy(0,20+i);
+			gotoxy(0,20+2*settings.attack_with_weapon+i);
 			if(i==INcho){
 				color(78);
 				printf("-> %s",INstr[i].c_str());
@@ -570,10 +573,10 @@ static stud*selTar(stud* atter,stuV& defer,const string& teamN,int startL){
 					color(7);
 				}
 			}else if(key==13){
-				if(defer[tarIdx]&&isalive[defer[tarIdx]->id]){return defer[tarIdx];}
+				break;
 			}
 		}
-		gotoxy(0,24);
+		gotoxy(0,24+2*settings.attack_with_weapon);
 		color(12);
 		printf("[INSANE] %s is insane! tar selected randomly!",atter->name.c_str());
 		color(7);
@@ -585,7 +588,7 @@ static stud*selTar(stud* atter,stuV& defer,const string& teamN,int startL){
 	while(tarIdx<size&&(!defer[tarIdx]||!isalive[defer[tarIdx]->id]||defer[tarIdx]->red<0)){tarIdx++;}
 	if(tarIdx>=size){return 0;}
 	clear_action_area();
-	gotoxy(0,19);
+	gotoxy(0,19+2*settings.attack_with_weapon);
 	color(14);
 	printf("%s - Select your target (W/S keys, Enter to confirm):\n",teamN.c_str());
 	for(int i=0;i<size;i++){
@@ -721,12 +724,12 @@ static actCho selAct(stud* atter, voiV& currentTeam){
 	if(hasLinkPotential){max_choice=2;}
 	
 	clear_action_area();
-	gotoxy(0,19);
+	gotoxy(0,19+2*settings.attack_with_weapon);
 	color(14);
 	printf("Choose action (W/S to move, Enter to confirm):");
 	
 	while(1){
-		gotoxy(0,20);
+		gotoxy(0,20+2*settings.attack_with_weapon);
 		if(choice==0){
 			color(14);
 			printf("-> ");
@@ -739,7 +742,7 @@ static actCho selAct(stud* atter, voiV& currentTeam){
 		}
 		color(7);
 		
-		gotoxy(0,21);
+		gotoxy(0,21+2*settings.attack_with_weapon);
 		if(choice==1){
 			color(14);
 			printf("-> ");
@@ -767,7 +770,7 @@ static actCho selAct(stud* atter, voiV& currentTeam){
 		color(7);
 		
 		if(hasLinkPotential){
-			gotoxy(0,22);
+			gotoxy(0,22+2*settings.attack_with_weapon);
 			
 			auto getRandomStr=[](int len)->string{
 				string s;
@@ -831,7 +834,7 @@ static actCho selAct(stud* atter, voiV& currentTeam){
 
 static bool attDis(stud*atter,stud*tar,stuV&team,stuV&enemy,const actCho&action,int&cntAlive){
 	if(atter==NULL||tar==NULL){return 0;}
-    gotoxy(0,24);
+    gotoxy(0,24+2*settings.attack_with_weapon);
     if(action.useSk==2){
         color(6);
         printf("[LINK_SKILL] %s will use %s!",atter->name.c_str(),link_ct[atter->WithP].c_str());
@@ -843,7 +846,7 @@ static bool attDis(stud*atter,stud*tar,stuV&team,stuV&enemy,const actCho&action,
         printf("[ATTACK] %s will attack %s!",atter->name.c_str(),tar->name.c_str());
     }
     color(7);
-    gotoxy(0,25);
+    gotoxy(0,25+2*settings.attack_with_weapon);
     color(14);
     printf("Press any key to continue...");
     getch();
@@ -919,7 +922,7 @@ static void turn(int rounds,voiV lA,voiV lB,bool isL){
 		if(p){teamB.push_back((stud*)p);}
 	}
 	int tchID=sbj_teacher;
-	for(int r=0;r<rounds;r++){
+	for(tur=1;tur<=rounds;tur++){
 		checkIN(teamA);
 		checkIN(teamB);
 		startTurn(teamA,teamB,tchID);
@@ -930,7 +933,7 @@ static void turn(int rounds,voiV lA,voiV lB,bool isL){
 		system("cls");
 		color(14);
 		printf("+========================================================+\n");
-		printf("|                      ROUND %-2d                          |\n",r+1);
+		printf("|                      ROUND %-2d                          |\n",tur);
 		printf("+========================================================+\n");
 		color(7);
 		sett(lA,lB,isL?5:3);
@@ -945,7 +948,7 @@ static void turn(int rounds,voiV lA,voiV lB,bool isL){
 		
 		// Team A 回合
 		if(canAct(teamA)){
-			int startL=20;
+			int startL=20+2*settings.attack_with_weapon;
 			atter1=selAtt(teamA,"Team A",startL);
 			if(atter1){
 				int tarLine=isL?startL+teamA.size()-5:startL+teamA.size()-3;
@@ -960,14 +963,14 @@ static void turn(int rounds,voiV lA,voiV lB,bool isL){
 		system("cls");
 		color(14);
 		printf("+========================================================+\n");
-		printf("|                      ROUND %-2d                          |\n",r+1);
+		printf("|                      ROUND %-2d                          |\n",tur);
 		printf("+========================================================+\n");
 		color(7);
 		sett(lA,lB,isL?5:3);
 		
 		// Team B 回合
 		if(canAct(teamB)){
-			int startL=20;
+			int startL=20+2*settings.attack_with_weapon;
 			atter2=selAtt(teamB,"Team B",startL);
 			if(atter2){
 				int tarLine=isL?startL+teamB.size()-5:startL+teamB.size()-3;
@@ -979,9 +982,9 @@ static void turn(int rounds,voiV lA,voiV lB,bool isL){
 			}
 		}
 		clear_action_area();
-		if(ifact1){attExe(atter1,tar1,teamA,teamB,action1,Bnum,19);}
-		if(ifact2){attExe(atter2,tar2,teamB,teamA,action2,Anum,22);}
-		gotoxy(0,25);
+		if(ifact1){attExe(atter1,tar1,teamA,teamB,action1,Bnum,19+2*settings.attack_with_weapon);}
+		if(ifact2){attExe(atter2,tar2,teamB,teamA,action2,Anum,22+2*settings.attack_with_weapon);}
+		gotoxy(0,25+2*settings.attack_with_weapon);
 		color(14);
 		printf("Press any key to continue...");
 		getch();
@@ -993,7 +996,7 @@ static void turn(int rounds,voiV lA,voiV lB,bool isL){
 }
 
 void fight(int day,int cla){
-	if(day==5&&cla>=7)return;
+	if(day==5&&cla>=7){return;}
 	if(cla==8){
 		system("cls");
 		color(14);
@@ -1009,16 +1012,15 @@ void fight(int day,int cla){
 		turn(8,listA,listB,1);
 		return;
 	}
-
 	system("cls");
 	color(14);
-	printf("\n+-----------------------------------------------------------+\n");
-	printf("|  Class: %s%*s|\n", subj2[classtable[day][cla]].c_str(), 50 - (int)subj2[classtable[day][cla]].length(), " ");
+	printf("+-----------------------------------------------------------+\n");
+	printf("|  Class: %s%*s|\n",subj2[classtable[day][cla]].c_str(),50-(int)subj2[classtable[day][cla]].length()," ");
 	printf("|  Subject bonus active! Students with matching attributes  |\n");
 	printf("|  gain +50%% attack power!                                  |\n");
 	printf("+-----------------------------------------------------------+\n");
 	color(7);
-	sett(listA, listB, 5);
+	sett(listA,listB,5);
 	checkProgress(2);
 
 	for(int i=0;i<stud_list.size();i++){
@@ -1026,49 +1028,39 @@ void fight(int day,int cla){
 		tmp=(stud*)stud_list[i];
 		if(tmp->id==26){((stud_B13*)tmp)->on_class_start(classtable[day][cla]);}
 	}
-
-	for (int i = 0; i < stud_list.size(); i++){
-		if (stud_list[i] == NULL) continue;
-		tmp = (stud * )(stud_list[i]);
-		for (int j : (*tmp).py) if (j == classtable[day][cla]){
-			(*tmp).att_mul.push_back({1.5, 3});
-		}
+	for(int i=0;i<stud_list.size();i++){
+		if(stud_list[i]==NULL){continue;}
+		tmp=(stud*)stud_list[i];
+		for(int j:(*tmp).py){if(j==classtable[day][cla]){(*tmp).att_mul.push_back({1.5,3});}}
 	}
+	vector<void*>lA,lB;
+	bool isc1[6]={0},isc2[6]={0};
 
-	vector<void*> lA, lB;
-	bool isc1[6] = {0}, isc2[6] = {0};
-	int current_pos_A = 0, current_pos_B = 0;
+	int current_pos_A=0,current_pos_B=0;
+	while(current_pos_A<5&&listA[current_pos_A]==NULL){current_pos_A++;}
+	while(current_pos_B<5&&listB[current_pos_B]==NULL){current_pos_B++;}
+	int startl=22+2*settings.attack_with_weapon;
 
-	while (current_pos_A < 5 && listA[current_pos_A] == NULL) current_pos_A++;
-	while (current_pos_B < 5 && listB[current_pos_B] == NULL) current_pos_B++;
-
-	int a_start_line = 23;
-	int b_start_line = a_start_line;
-
-	// Team A 选择
-	bool a_selection_valid=false,a_chosen=false;
+	bool a_selection_valid=0,a_chosen=0;
 	while(!a_selection_valid){
 		lA.clear();
-		memset(isc1, 0, sizeof(isc1));
-		current_pos_A = 0;
-		while(current_pos_A < 5 && listA[current_pos_A] == NULL) current_pos_A++;
-		
-		gotoxy(0, 21);
+		memset(isc1,0,sizeof(isc1));
+		current_pos_A=0;
+		while(current_pos_A<5&&listA[current_pos_A]==NULL){current_pos_A++;}
+		gotoxy(0,startl-2);
 		color(14);
 		if(!a_chosen){
 			printf("\nTeam A - Select 3 students for battle (W/S to move, Enter to select):\n");
 			a_chosen=1;
 		}else{printf("\nTeam A - Invalid choice, please select again:                         \n");}
 		color(7);
-		
-		for (int i = 0; i < 5; i++){
-			if (listA[i] == NULL){
+		for(int i=0;i<5;i++){
+			if(listA[i]==NULL){
 				printf("\n");
 				continue;
 			}
-			stud y = (*(stud * )listA[i]);
-			
-			if (i == current_pos_A){
+			stud y=(*(stud*)listA[i]);
+			if(i==current_pos_A){
 				color(14);
 				printf("-> ");
 				if(y.id==26&&((stud_B13*)&y)->isAway()){
@@ -1082,8 +1074,7 @@ void fight(int day,int cla){
 					printf("                    \n");
 				}
 				color(7);
-			}
-			else {
+			}else{
 				printf("   ");
 				if(y.id==26&&((stud_B13*)&y)->isAway()){
 					color(8);
@@ -1098,59 +1089,56 @@ void fight(int day,int cla){
 				color(7);
 			}
 		}
-		
-		while(lA.size() < 3){
-			char key = getch();
-			if(key == 'w' || key == 'W'){
-				gotoxy(0, a_start_line + current_pos_A);
+		while(lA.size()<3){
+			char key=getch();
+			if(key=='w'||key=='W'){
+				gotoxy(0,startl+current_pos_A);
 				printf("   ");
 				current_pos_A--;
-				if(current_pos_A < 0) current_pos_A = 4;
-				while(listA[current_pos_A] == NULL){
+				if(current_pos_A<0){current_pos_A=4;}
+				while(listA[current_pos_A]==NULL){
 					current_pos_A--;
-					if(current_pos_A < 0) current_pos_A = 4;
+					if(current_pos_A<0){current_pos_A=4;}
 				}
-				gotoxy(0, a_start_line + current_pos_A);
+				gotoxy(0,startl+current_pos_A);
 				color(14);
 				printf("->");
 				color(7);
 			}
-			else if(key == 's' || key == 'S'){
-				gotoxy(0, a_start_line + current_pos_A);
+			else if(key=='s'||key=='S'){
+				gotoxy(0,startl+current_pos_A);
 				printf("   ");
 				current_pos_A++;
-				if(current_pos_A >= 5) current_pos_A = 0;
-				while(listA[current_pos_A] == NULL){
+				if(current_pos_A>=5){current_pos_A=0;}
+				while(listA[current_pos_A]==NULL){
 					current_pos_A++;
-					if(current_pos_A >= 5) current_pos_A = 0;
+					if(current_pos_A>=5){current_pos_A=0;}
 				}
-				gotoxy(0, a_start_line + current_pos_A);
+				gotoxy(0,startl+current_pos_A);
 				color(14);
 				printf("->");
 				color(7);
 			}
-			else if(key == 13){
-				if(!isc1[current_pos_A] && listA[current_pos_A] != NULL){
+			else if(key==13){
+				if(!isc1[current_pos_A]&&listA[current_pos_A]!=NULL){
 					lA.push_back(listA[current_pos_A]);
-					isc1[current_pos_A] = true;
-					
-					gotoxy(3, a_start_line + current_pos_A);
+					isc1[current_pos_A]=1;
+					gotoxy(3,startl+current_pos_A);
 					color(8);
-					stud y = (*(stud * )listA[current_pos_A]);
+					stud y=(*(stud*)listA[current_pos_A]);
 					printf("%s (ATT:%02d) [SELECTED]\n",y.name.c_str(),y.get_att());
 					color(7);
-					gotoxy(0, a_start_line + current_pos_A);
+					gotoxy(0,startl+current_pos_A);
 					printf("   ");
-					
-					int next = current_pos_A + 1;
-					while(next < 5 && (isc1[next] || listA[next] == NULL)) next++;
-					if(next >= 5){
-						next = 0;
-						while(next < 5 && (isc1[next] || listA[next] == NULL)) next++;
+					int next=current_pos_A+1;
+					while(next<5&&(isc1[next]||listA[next]==NULL)){next++;}
+					if(next>=5){
+						next=0;
+						while(next<5&&(isc1[next]||listA[next]==NULL)){next++;}
 					}
-					if(next < 5 && !isc1[next]){
-						current_pos_A = next;
-						gotoxy(0, a_start_line + current_pos_A);
+					if(next<5&&!isc1[next]){
+						current_pos_A=next;
+						gotoxy(0,startl+current_pos_A);
 						color(14);
 						printf("->");
 						color(7);
@@ -1158,55 +1146,48 @@ void fight(int day,int cla){
 				}
 			}
 		}
-		
-		bool all_dead = true;
-		for(auto x : lA){
-			stud* s = (stud*)x;
+		bool all_dead=1;
+		for(auto x:lA){
+			stud* s=(stud*)x;
 			if(s->id==26&&((stud_B13*)s)->isAway()){continue;}
-			if(isalive[s->id] && s->red >= 0){
-				all_dead = false;
+			if(isalive[s->id]&&s->red>=0){
+				all_dead=0;
 				break;
 			}
 		}
-		
 		if(all_dead){
-			a_selection_valid = false;
-			for(int i = 0; i < 10; i++){
-				gotoxy(0, a_start_line + i);
-				for(int j = 0; j < 80; j++) printf(" ");
+			a_selection_valid=0;
+			for(int i=0;i<10;i++){
+				gotoxy(0,startl+i);
+				for(int j=0;j<80;j++){printf(" ");}
 			}
-		} else {
-			a_selection_valid = true;
+		}else{
+			a_selection_valid=1;
 		}
 	}
 
-	// Team B 选择
-	bool b_selection_valid=false,b_chosen=false;
+	bool b_selection_valid=0,b_chosen=0;
 	while(!b_selection_valid){
 		lB.clear();
-		memset(isc2, 0, sizeof(isc2));
-		current_pos_B = 0;
-		while(current_pos_B < 5 && listB[current_pos_B] == NULL) current_pos_B++;
-		
-		gotoxy(0, 21);
+		memset(isc2,0,sizeof(isc2));
+		current_pos_B=0;
+		while(current_pos_B<5&&listB[current_pos_B]==NULL){current_pos_B++;}
+		gotoxy(0,startl-2);
 		color(14);
 		if(!b_chosen){
 			printf("\nTeam B - Select 3 students for battle (W/S to move, Enter to select):\n");
 			b_chosen=1;
 		}else{printf("\nTeam B - Invalid choice, please select again:                         \n");}
 		color(7);
-		
-		for (int i = 0; i < 5; i++){
-			if (listB[i] == NULL){
+		for(int i=0;i<5;i++){
+			if(listB[i]==NULL){
 				printf("\n");
 				continue;
 			}
-			stud y = (*(stud * )listB[i]);
-			
-			if (i == current_pos_B){
+			stud y=(*(stud*)listB[i]);
+			if(i==current_pos_B){
 				color(14);
 				printf("-> ");
-				color(9);
 				if(y.id==26&&((stud_B13*)&y)->isAway()){
 					color(8);
 					printf("%d. %s(AWAY)                 \n",i+1,y.name.c_str());
@@ -1218,8 +1199,7 @@ void fight(int day,int cla){
 					printf("                    \n");
 				}
 				color(7);
-			}
-			else {
+			}else{
 				printf("   ");
 				if(y.id==26&&((stud_B13*)&y)->isAway()){
 					color(8);
@@ -1234,59 +1214,56 @@ void fight(int day,int cla){
 				color(7);
 			}
 		}
-		
-		while(lB.size() < 3){
-			char key = getch();
-			if(key == 'w' || key == 'W'){
-				gotoxy(0, b_start_line + current_pos_B);
+		while(lB.size()<3){
+			char key=getch();
+			if(key=='w'||key=='W'){
+				gotoxy(0,startl+current_pos_B);
 				printf("   ");
 				current_pos_B--;
-				if(current_pos_B < 0) current_pos_B = 4;
-				while(listB[current_pos_B] == NULL){
+				if(current_pos_B<0){current_pos_B=4;}
+				while(listB[current_pos_B]==NULL){
 					current_pos_B--;
-					if(current_pos_B < 0) current_pos_B = 4;
+					if(current_pos_B<0){current_pos_B=4;}
 				}
-				gotoxy(0, b_start_line + current_pos_B);
+				gotoxy(0,startl+current_pos_B);
 				color(14);
 				printf("->");
 				color(7);
 			}
-			else if(key == 's' || key == 'S'){
-				gotoxy(0, b_start_line + current_pos_B);
+			else if(key=='s'||key=='S'){
+				gotoxy(0,startl+current_pos_B);
 				printf("   ");
 				current_pos_B++;
-				if(current_pos_B >= 5) current_pos_B = 0;
-				while(listB[current_pos_B] == NULL){
+				if(current_pos_B>=5){current_pos_B=0;}
+				while(listB[current_pos_B]==NULL){
 					current_pos_B++;
-					if(current_pos_B >= 5) current_pos_B = 0;
+					if(current_pos_B>=5){current_pos_B=0;}
 				}
-				gotoxy(0, b_start_line + current_pos_B);
+				gotoxy(0,startl+current_pos_B);
 				color(14);
 				printf("->");
 				color(7);
 			}
-			else if(key == 13){
-				if(!isc2[current_pos_B] && listB[current_pos_B] != NULL){
+			else if(key==13){
+				if(!isc2[current_pos_B]&&listB[current_pos_B]!=NULL){
 					lB.push_back(listB[current_pos_B]);
-					isc2[current_pos_B] = true;
-					
-					gotoxy(3, b_start_line + current_pos_B);
+					isc2[current_pos_B]=1;
+					gotoxy(3,startl+current_pos_B);
 					color(8);
-					stud y = (*(stud * )listB[current_pos_B]);
+					stud y=(*(stud*)listB[current_pos_B]);
 					printf("%s (ATT:%02d) [SELECTED]\n",y.name.c_str(),y.get_att());
 					color(7);
-					gotoxy(0, b_start_line + current_pos_B);
+					gotoxy(0,startl+current_pos_B);
 					printf("   ");
-					
-					int next = current_pos_B + 1;
-					while(next < 5 && (isc2[next] || listB[next] == NULL)) next++;
-					if(next >= 5){
-						next = 0;
-						while(next < 5 && (isc2[next] || listB[next] == NULL)) next++;
+					int next=current_pos_B+1;
+					while(next<5&&(isc2[next]||listB[next]==NULL)){next++;}
+					if(next>=5){
+						next=0;
+						while(next<5&&(isc2[next]||listB[next]==NULL)){next++;}
 					}
-					if(next < 5 && !isc2[next]){
-						current_pos_B = next;
-						gotoxy(0, b_start_line + current_pos_B);
+					if(next<5&&!isc2[next]){
+						current_pos_B=next;
+						gotoxy(0,startl+current_pos_B);
 						color(14);
 						printf("->");
 						color(7);
@@ -1294,66 +1271,56 @@ void fight(int day,int cla){
 				}
 			}
 		}
-		
-		bool all_dead = true;
-		for(auto x : lB){
-			stud* s = (stud*)x;
+		bool all_dead=1;
+		for(auto x:lB){
+			stud* s=(stud*)x;
 			if(s->id==26&&((stud_B13*)s)->isAway()){continue;}
-			if(isalive[s->id] && s->red >= 0){
-				all_dead = false;
+			if(isalive[s->id]&&s->red>=0){
+				all_dead=0;
 				break;
 			}
 		}
-		
 		if(all_dead){
-			b_selection_valid = false;
-			for(int i = 0; i < 10; i++){
-				gotoxy(0, b_start_line + i);
-				for(int j = 0; j < 80; j++) printf(" ");
+			b_selection_valid=0;
+			for(int i=0;i<10;i++){
+				gotoxy(0,startl+i);
+				for(int j=0;j<80;j++){printf(" ");}
 			}
-		} else {
-			b_selection_valid = true;
+		}else{
+			b_selection_valid=1;
 		}
 	}
 
 	color(7);
-
-	gotoxy(0, 22);
+	gotoxy(0,startl-1);
 	color(10);
 	printf("Team A selected: ");
-	for (auto x : lA){
-		stud y = (*(stud * )x);
-		printf("%s ", y.name.c_str());
+	for(auto x:lA){
+		stud y=(*(stud*)x);
+		printf("%s ",y.name.c_str());
 	}
 	color(7);
-	printf("                                              \n");
-
+	printf("                                                                          \n");
 	color(9);
 	printf("Team B selected: ");
-	for (auto x : lB){
-		stud y = (*(stud * )x);
-		printf("%s ", y.name.c_str());
+	for(auto x:lB){
+		stud y=(*(stud*)x);
+		printf("%s ",y.name.c_str());
 	}
 	color(7);
 	printf("                             \n                             \n");
-
 	printf("Press any key to start the battle...                ");
 	printf("\n                                                  ");
 	printf("\n                                                  ");
 	getch();
 
-	// 学科开始效果
 	applySubjectStart(classtable[day][cla]);
 	checkListenStart(classtable[day][cla]);
-	
-	// ICT 特殊事件
 	if(classtable[day][cla]==9){
 		if(rand()%1000<1){
 			if(debug_on){logPrint(7,"[ICT Class] OIer's game triggered! (0.1%%)\n");}
-			
 			int specialIds[]={1,26,3,9,12};
 			int teamACount=0,teamBCount=0;
-			
 			for(auto x:lA){
 				if(x==NULL){continue;}
 				stud* s=(stud*)x;
@@ -1376,9 +1343,7 @@ void fight(int day,int cla){
 					}
 				}
 			}
-			
 			if(debug_on){logPrint(7,"[ICT Class] OIer counts: Team A = %d, Team B = %d\n",teamACount,teamBCount);}
-			
 			if(teamACount>teamBCount){
 				if(debug_on){logPrint(12,"[ICT Class] Team A wins! Team B destroyed.\n");}
 				for(auto x:lB){if(x!=NULL){((stud*)x)->cred(-9999);}}
@@ -1396,8 +1361,6 @@ void fight(int day,int cla){
 
 	turn(3,lA,lB,0);
 	applySubjectEnd(classtable[day][cla]);
-
-	// 检查残血/满血通关成就
 	bool allLow=1,allFull=1;
 
 	for(auto x:lA){
@@ -1419,15 +1382,13 @@ void fight(int day,int cla){
 
 	if(allLow){checkProgress(7);}
 	if(allFull){checkProgress(8);}
-
 	for(int i=0;i<stud_list.size();i++){
-		if(stud_list[i]==NULL) continue;
+		if(stud_list[i]==NULL){continue;}
 		tmp=(stud*)stud_list[i];
 		if(tmp->id==28){((stud_B15*)tmp)->on_class_end();}
 	}
-
 	for(int i=0;i<stud_list.size();i++){
-		if(stud_list[i] == NULL){continue;}
+		if(stud_list[i]==NULL){continue;}
 		tmp=(stud*)stud_list[i];
 		tmp->on_fight_end();
 	}
